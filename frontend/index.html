@@ -142,7 +142,7 @@
     }
 
     .voice-overlay { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(139,92,246,0.15); border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); padding: 16px; z-index: 25; display: none; }
-    .voice-overlay.open { display: block; animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .voice-overlay.open { display: block; pointer-events: auto; animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
     .voice-waveform { display: flex; align-items: center; justify-content: center; gap: 3px; height: 32px; margin-bottom: 12px; }
     .voice-waveform .bar { width: 3px; border-radius: 999px; background: #8B5CF6; transition: height 0.1s; }
