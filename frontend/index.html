@@ -129,6 +129,59 @@
 
     .toast-copied { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1E1B2E; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; z-index: 60; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
     .toast-copied.show { opacity: 1; }
+
+    .mic-btn { width: 36px; height: 36px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+    .mic-btn.idle { background: rgba(139,92,246,0.06); color: #6B7280; }
+    .mic-btn.idle:hover { background: rgba(139,92,246,0.12); color: #8B5CF6; }
+    .mic-btn.active { background: #EF4444; color: #fff; animation: micPulse 1.2s ease-in-out infinite; }
+    .mic-btn.paused { background: rgba(239,68,68,0.15); color: #EF4444; }
+
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+
+    .voice-overlay { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(139,92,246,0.15); border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); padding: 16px; z-index: 25; display: none; }
+    .voice-overlay.open { display: block; animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    .voice-waveform { display: flex; align-items: center; justify-content: center; gap: 3px; height: 32px; margin-bottom: 12px; }
+    .voice-waveform .bar { width: 3px; border-radius: 999px; background: #8B5CF6; transition: height 0.1s; }
+    .voice-waveform.listening .bar { animation: waveBar 0.6s ease-in-out infinite alternate; }
+    .voice-waveform.listening .bar:nth-child(1) { animation-delay: 0s; }
+    .voice-waveform.listening .bar:nth-child(2) { animation-delay: 0.1s; }
+    .voice-waveform.listening .bar:nth-child(3) { animation-delay: 0.2s; }
+    .voice-waveform.listening .bar:nth-child(4) { animation-delay: 0.3s; }
+    .voice-waveform.listening .bar:nth-child(5) { animation-delay: 0.4s; }
+    .voice-waveform.listening .bar:nth-child(6) { animation-delay: 0.3s; }
+    .voice-waveform.listening .bar:nth-child(7) { animation-delay: 0.2s; }
+    .voice-waveform.listening .bar:nth-child(8) { animation-delay: 0.1s; }
+    .voice-waveform.listening .bar:nth-child(9) { animation-delay: 0s; }
+
+    @keyframes waveBar {
+      0% { height: 4px; }
+      100% { height: 28px; }
+    }
+
+    .voice-transcript { font-size: 11px; color: #374151; max-height: 60px; overflow-y: auto; text-align: center; margin-bottom: 12px; line-height: 1.5; min-height: 20px; }
+    .voice-transcript .placeholder { color: #9CA3AF; font-style: italic; }
+
+    .voice-status { text-align: center; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+    .voice-status.listening { color: #8B5CF6; }
+    .voice-status.paused { color: #EF4444; }
+
+    .voice-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .voice-ctrl-btn { display: flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 10px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .voice-ctrl-btn .material-symbols-outlined { font-size: 16px; }
+    .voice-ctrl-write { background: #8B5CF6; color: #fff; }
+    .voice-ctrl-write:hover { background: #7C3AED; }
+    .voice-ctrl-pause { background: rgba(239,68,68,0.1); color: #EF4444; }
+    .voice-ctrl-pause:hover { background: rgba(239,68,68,0.2); }
+    .voice-ctrl-resume { background: rgba(34,197,94,0.1); color: #16A34A; }
+    .voice-ctrl-resume:hover { background: rgba(34,197,94,0.2); }
+    .voice-ctrl-cancel { background: rgba(107,114,128,0.1); color: #6B7280; }
+    .voice-ctrl-cancel:hover { background: rgba(107,114,128,0.2); }
+
+    .voice-unsupported { text-align: center; padding: 12px; font-size: 11px; color: #6B7280; }
   </style>
 </head>
 
@@ -286,9 +339,38 @@
             <div class="file-select-dropdown" id="fileSelectDropdown"></div>
           </div>
           <textarea id="chatInput" rows="1" placeholder="Ask Aura anything about your files..." class="flex-1 bg-transparent border-none outline-none resize-none text-xs md:text-sm text-apple-dark placeholder-apple-subtle px-2 max-h-24"></textarea>
+          <button id="btnMic" class="mic-btn idle" title="Voice Input">
+            <span class="material-symbols-outlined text-[20px]">mic</span>
+          </button>
           <button id="btnSend" class="w-9 h-9 rounded-xl gradient-orb text-white flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-md">
             <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
           </button>
+        </div>
+        <div id="voiceOverlay" class="voice-overlay w-full max-w-2xl">
+          <div id="voiceStatus" class="voice-status listening">Listening...</div>
+          <div id="voiceWaveform" class="voice-waveform listening">
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+            <div class="bar" style="height:4px"></div>
+          </div>
+          <div id="voiceTranscript" class="voice-transcript"><span class="placeholder">Speak now...</span></div>
+          <div class="voice-controls">
+            <button id="voiceCtrlWrite" class="voice-ctrl-btn voice-ctrl-write" title="Accept text">
+              <span class="material-symbols-outlined">check</span> Write
+            </button>
+            <button id="voiceCtrlPause" class="voice-ctrl-btn voice-ctrl-pause" title="Pause listening">
+              <span class="material-symbols-outlined">pause</span> Pause
+            </button>
+            <button id="voiceCtrlCancel" class="voice-ctrl-btn voice-ctrl-cancel" title="Cancel and discard">
+              <span class="material-symbols-outlined">close</span> Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1156,6 +1238,162 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') fileSelectDropdown.classList.remove('open');
     });
+
+    // ── VOICE INPUT ──────────────────────────────────────────
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let voiceActive = false;
+    let voicePaused = false;
+    let voiceFinalTranscript = '';
+    let voiceInterimTranscript = '';
+
+    const btnMic = $('btnMic');
+    const voiceOverlay = $('voiceOverlay');
+    const voiceStatus = $('voiceStatus');
+    const voiceWaveform = $('voiceWaveform');
+    const voiceTranscript = $('voiceTranscript');
+    const voiceCtrlWrite = $('voiceCtrlWrite');
+    const voiceCtrlPause = $('voiceCtrlPause');
+    const voiceCtrlCancel = $('voiceCtrlCancel');
+
+    function initVoice() {
+      if (!SpeechRecognition) {
+        btnMic.addEventListener('click', () => {
+          showToast('Voice input is not supported in this browser', 'mic_off');
+        });
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        voiceInterimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            voiceFinalTranscript += transcript + ' ';
+          } else {
+            voiceInterimTranscript += transcript;
+          }
+        }
+        renderVoiceTranscript();
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === 'no-speech') return;
+        if (event.error === 'aborted') return;
+        console.warn('Speech recognition error:', event.error);
+        showToast('Voice input error: ' + event.error, 'error');
+        stopVoice(false);
+      };
+
+      recognition.onend = () => {
+        if (voiceActive && !voicePaused) {
+          try { recognition.start(); } catch(e) {}
+        }
+      };
+
+      btnMic.addEventListener('click', toggleVoice);
+      voiceCtrlWrite.addEventListener('click', acceptVoice);
+      voiceCtrlPause.addEventListener('click', togglePauseVoice);
+      voiceCtrlCancel.addEventListener('click', cancelVoice);
+    }
+
+    function toggleVoice() {
+      if (voiceActive) {
+        stopVoice(false);
+      } else {
+        startVoice();
+      }
+    }
+
+    function startVoice() {
+      voiceFinalTranscript = '';
+      voiceInterimTranscript = '';
+      voiceActive = true;
+      voicePaused = false;
+
+      btnMic.className = 'mic-btn active';
+      btnMic.querySelector('.material-symbols-outlined').textContent = 'mic';
+      voiceOverlay.classList.add('open');
+      voiceWaveform.classList.add('listening');
+      voiceStatus.className = 'voice-status listening';
+      voiceStatus.textContent = 'Listening...';
+      renderVoiceTranscript();
+
+      voiceCtrlPause.innerHTML = '<span class="material-symbols-outlined">pause</span> Pause';
+      voiceCtrlPause.className = 'voice-ctrl-btn voice-ctrl-pause';
+
+      try { recognition.start(); } catch(e) {}
+    }
+
+    function stopVoice(apply) {
+      voiceActive = false;
+      voicePaused = false;
+      try { recognition.stop(); } catch(e) {}
+
+      btnMic.className = 'mic-btn idle';
+      btnMic.querySelector('.material-symbols-outlined').textContent = 'mic';
+      voiceOverlay.classList.remove('open');
+      voiceWaveform.classList.remove('listening');
+    }
+
+    function togglePauseVoice() {
+      if (!voiceActive) return;
+
+      if (voicePaused) {
+        voicePaused = false;
+        voiceStatus.className = 'voice-status listening';
+        voiceStatus.textContent = 'Listening...';
+        voiceWaveform.classList.add('listening');
+        voiceCtrlPause.innerHTML = '<span class="material-symbols-outlined">pause</span> Pause';
+        voiceCtrlPause.className = 'voice-ctrl-btn voice-ctrl-pause';
+        try { recognition.start(); } catch(e) {}
+      } else {
+        voicePaused = true;
+        voiceStatus.className = 'voice-status paused';
+        voiceStatus.textContent = 'Paused';
+        voiceWaveform.classList.remove('listening');
+        voiceCtrlPause.innerHTML = '<span class="material-symbols-outlined">play_arrow</span> Resume';
+        voiceCtrlPause.className = 'voice-ctrl-btn voice-ctrl-resume';
+        try { recognition.stop(); } catch(e) {}
+      }
+    }
+
+    function acceptVoice() {
+      const text = (voiceFinalTranscript + voiceInterimTranscript).trim();
+      stopVoice(true);
+      if (text) {
+        const existing = chatInput.value;
+        chatInput.value = existing ? existing + ' ' + text : text;
+        chatInput.dispatchEvent(new Event('input'));
+        chatInput.focus();
+      }
+    }
+
+    function cancelVoice() {
+      voiceFinalTranscript = '';
+      voiceInterimTranscript = '';
+      stopVoice(false);
+    }
+
+    function renderVoiceTranscript() {
+      const full = (voiceFinalTranscript + voiceInterimTranscript).trim();
+      if (!full) {
+        voiceTranscript.innerHTML = '<span class="placeholder">Speak now...</span>';
+      } else {
+        let html = escapeHtml(voiceFinalTranscript);
+        if (voiceInterimTranscript) {
+          html += '<span style="opacity:0.5">' + escapeHtml(voiceInterimTranscript) + '</span>';
+        }
+        voiceTranscript.innerHTML = html;
+      }
+    }
+
+    initVoice();
   </script>
 </body>
 </html>
