@@ -344,6 +344,35 @@
   </div>
   <div id="copyToast" class="toast-copied">Copied to clipboard</div>
 
+  <!-- ================= SHARE MODAL ================= -->
+  <div id="shareModal" class="fixed inset-0 z-[60] hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" id="shareModalBackdrop"></div>
+    <div class="relative apple-glass rounded-2xl shadow-2xl border border-white/60 w-80 p-5 space-y-4 anim-fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-apple-dark">Share Response</h3>
+        <button id="shareModalClose" class="p-1 text-apple-subtle hover:text-black rounded-lg"><span class="material-symbols-outlined text-[18px]">close</span></button>
+      </div>
+      <p class="text-[11px] text-apple-subtle leading-relaxed line-clamp-3" id="shareModalPreview"></p>
+      <div class="space-y-1.5">
+        <button id="shareOptCopy" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-apple-dark hover:bg-purple-500/10 transition-all">
+          <span class="material-symbols-outlined text-[18px] text-purple-600">content_copy</span> Copy to Clipboard
+        </button>
+        <button id="shareOptEmail" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-apple-dark hover:bg-purple-500/10 transition-all">
+          <span class="material-symbols-outlined text-[18px] text-purple-600">mail</span> Share via Email
+        </button>
+        <button id="shareOptWhatsApp" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-apple-dark hover:bg-purple-500/10 transition-all">
+          <span class="material-symbols-outlined text-[18px] text-purple-600">chat</span> Share on WhatsApp
+        </button>
+        <button id="shareOptTwitter" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-apple-dark hover:bg-purple-500/10 transition-all">
+          <span class="material-symbols-outlined text-[18px] text-purple-600">tag</span> Share on Twitter / X
+        </button>
+        <button id="shareOptLinkedIn" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-apple-dark hover:bg-purple-500/10 transition-all">
+          <span class="material-symbols-outlined text-[18px] text-purple-600">work</span> Share on LinkedIn
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ── STATE ────────────────────────────────────────────────
     let currentConversationId = null;
@@ -423,6 +452,30 @@
         if (option) {
           selectFileSource(option.getAttribute('data-doc-id'));
         }
+      });
+
+      $('shareModalBackdrop').addEventListener('click', closeShareModal);
+      $('shareModalClose').addEventListener('click', closeShareModal);
+      $('shareOptCopy').addEventListener('click', () => {
+        const text = $('shareModal')._shareText;
+        copyToClipboard(text);
+        closeShareModal();
+      });
+      $('shareOptEmail').addEventListener('click', () => {
+        shareViaEmail($('shareModal')._shareText);
+        closeShareModal();
+      });
+      $('shareOptWhatsApp').addEventListener('click', () => {
+        shareViaWhatsApp($('shareModal')._shareText);
+        closeShareModal();
+      });
+      $('shareOptTwitter').addEventListener('click', () => {
+        shareViaTwitter($('shareModal')._shareText);
+        closeShareModal();
+      });
+      $('shareOptLinkedIn').addEventListener('click', () => {
+        shareViaLinkedIn($('shareModal')._shareText);
+        closeShareModal();
       });
     }
 
@@ -801,11 +854,48 @@
 
     function shareContent(text) {
       if (navigator.share) {
-        navigator.share({ title: 'Aura AI Response', text: text }).catch(() => {});
+        navigator.share({ title: 'Aura AI Response', text: text }).catch(() => {
+          openShareModal(text);
+        });
       } else {
-        copyToClipboard(text);
-        showToast('Copied to clipboard (share not supported)', 'content_copy');
+        openShareModal(text);
       }
+    }
+
+    function openShareModal(text) {
+      const modal = $('shareModal');
+      const preview = $('shareModalPreview');
+      const truncated = text.length > 200 ? text.substring(0, 200) + '...' : text;
+      preview.textContent = truncated;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      modal._shareText = text;
+    }
+
+    function closeShareModal() {
+      const modal = $('shareModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      modal._shareText = '';
+    }
+
+    function shareViaEmail(text) {
+      const subject = encodeURIComponent('Aura AI Response');
+      const body = encodeURIComponent(text);
+      window.open('mailto:?subject=' + subject + '&body=' + body, '_self');
+    }
+
+    function shareViaWhatsApp(text) {
+      window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function shareViaTwitter(text) {
+      const truncated = text.length > 280 ? text.substring(0, 277) + '...' : text;
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(truncated), '_blank');
+    }
+
+    function shareViaLinkedIn(text) {
+      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href) + '&summary=' + encodeURIComponent(text), '_blank');
     }
 
     function startEditMessage(msgRow, originalContent) {
