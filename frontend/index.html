@@ -1244,6 +1244,7 @@
     let recognition = null;
     let voiceActive = false;
     let voicePaused = false;
+    let voicePermDenied = false;
     let voiceFinalTranscript = '';
     let voiceInterimTranscript = '';
 
@@ -1285,13 +1286,19 @@
       recognition.onerror = (event) => {
         if (event.error === 'no-speech') return;
         if (event.error === 'aborted') return;
+        if (event.error === 'not-allowed') {
+          voicePermDenied = true;
+          stopVoice(false);
+          showToast('Microphone access denied. Click the lock icon in the address bar to allow microphone access.', 'mic_off');
+          return;
+        }
         console.warn('Speech recognition error:', event.error);
         showToast('Voice input error: ' + event.error, 'error');
         stopVoice(false);
       };
 
       recognition.onend = () => {
-        if (voiceActive && !voicePaused) {
+        if (voiceActive && !voicePaused && !voicePermDenied) {
           try { recognition.start(); } catch(e) {}
         }
       };
@@ -1302,6 +1309,30 @@
       voiceCtrlCancel.addEventListener('click', cancelVoice);
     }
 
+    async function requestMicAccess() {
+      if (voicePermDenied) return false;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('getUserMedia is not supported in this browser', 'mic_off');
+        return false;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(t => t.stop());
+        voicePermDenied = false;
+        return true;
+      } catch (err) {
+        voicePermDenied = true;
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          showToast('Microphone permission denied. Click the lock icon in the address bar to allow microphone access.', 'mic_off');
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          showToast('No microphone detected. Please connect a microphone and try again.', 'mic_off');
+        } else {
+          showToast('Could not access microphone: ' + err.message, 'error');
+        }
+        return false;
+      }
+    }
+
     function toggleVoice() {
       if (voiceActive) {
         stopVoice(false);
@@ -1310,9 +1341,22 @@
       }
     }
 
-    function startVoice() {
+    async function startVoice() {
       voiceFinalTranscript = '';
       voiceInterimTranscript = '';
+
+      if (!(await requestMicAccess())) {
+        return;
+      }
+
+      let started = false;
+      try { recognition.start(); started = true; } catch(e) {}
+
+      if (!started) {
+        showToast('Could not start voice input. Please try again.', 'error');
+        return;
+      }
+
       voiceActive = true;
       voicePaused = false;
 
@@ -1326,8 +1370,6 @@
 
       voiceCtrlPause.innerHTML = '<span class="material-symbols-outlined">pause</span> Pause';
       voiceCtrlPause.className = 'voice-ctrl-btn voice-ctrl-pause';
-
-      try { recognition.start(); } catch(e) {}
     }
 
     function stopVoice(apply) {
@@ -1341,17 +1383,27 @@
       voiceWaveform.classList.remove('listening');
     }
 
-    function togglePauseVoice() {
+    async function togglePauseVoice() {
       if (!voiceActive) return;
 
       if (voicePaused) {
+        if (!(await requestMicAccess())) {
+          stopVoice(false);
+          return;
+        }
+        let started = false;
+        try { recognition.start(); started = true; } catch(e) {}
+        if (!started) {
+          showToast('Could not resume voice input.', 'error');
+          stopVoice(false);
+          return;
+        }
         voicePaused = false;
         voiceStatus.className = 'voice-status listening';
         voiceStatus.textContent = 'Listening...';
         voiceWaveform.classList.add('listening');
         voiceCtrlPause.innerHTML = '<span class="material-symbols-outlined">pause</span> Pause';
         voiceCtrlPause.className = 'voice-ctrl-btn voice-ctrl-pause';
-        try { recognition.start(); } catch(e) {}
       } else {
         voicePaused = true;
         voiceStatus.className = 'voice-status paused';
