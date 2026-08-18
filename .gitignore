@@ -1,3 +1,5 @@
 .env
 backend/uploads/final_resume.pdf
 backend/uploads/Parna_Nayak_Data_Analyst_Resume_Updated.pdf
+backend/database/data.db
+.gitignore
