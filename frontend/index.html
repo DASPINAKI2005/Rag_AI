@@ -72,6 +72,62 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .anim-fade-in { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    .prose-content h2 { font-size: 1.1em; font-weight: 700; margin: 1em 0 0.4em; color: #1E1B2E; }
+    .prose-content h3 { font-size: 1em; font-weight: 700; margin: 0.8em 0 0.3em; color: #374151; }
+    .prose-content p { margin: 0.5em 0; }
+    .prose-content ul, .prose-content ol { margin: 0.4em 0; padding-left: 1.5em; }
+    .prose-content ul { list-style-type: disc; }
+    .prose-content ol { list-style-type: decimal; }
+    .prose-content li { margin: 0.15em 0; }
+    .prose-content blockquote { border-left: 3px solid #8B5CF6; padding: 0.4em 0.8em; margin: 0.5em 0; background: rgba(139,92,246,0.05); border-radius: 0 8px 8px 0; font-style: italic; color: #4B5563; }
+    .prose-content code { background: rgba(139,92,246,0.08); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; font-family: 'SF Mono', 'Fira Code', monospace; color: #7C3AED; }
+    .prose-content pre { background: #1a1a2e; color: #e0e0e0; padding: 14px 16px; border-radius: 10px; overflow-x: auto; margin: 0.6em 0; font-size: 0.8em; line-height: 1.5; position: relative; }
+    .prose-content pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
+    .prose-content hr { border: none; border-top: 1px solid rgba(139,92,246,0.15); margin: 0.8em 0; }
+    .prose-content a { color: #8B5CF6; text-decoration: underline; }
+    .prose-content strong { font-weight: 700; }
+    .prose-content em { font-style: italic; }
+    .prose-content table { border-collapse: collapse; width: 100%; margin: 0.5em 0; font-size: 0.85em; }
+    .prose-content th, .prose-content td { border: 1px solid rgba(139,92,246,0.15); padding: 6px 10px; text-align: left; }
+    .prose-content th { background: rgba(139,92,246,0.06); font-weight: 700; }
+
+    .code-block-wrap { position: relative; margin: 0.5em 0; }
+    .code-block-lang { position: absolute; top: 6px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-family: 'SF Mono', monospace; }
+    .code-copy-btn { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7); padding: 3px 8px; border-radius: 6px; font-size: 10px; cursor: pointer; transition: all 0.2s; }
+    .code-copy-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+    .msg-actions { display: flex; gap: 2px; margin-top: 6px; opacity: 0; transition: opacity 0.2s; }
+    .msg-row:hover .msg-actions { opacity: 1; }
+    .msg-action-btn { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 6px; color: #9CA3AF; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+    .msg-action-btn:hover { background: rgba(139,92,246,0.08); color: #8B5CF6; }
+    .msg-action-btn .material-symbols-outlined { font-size: 15px; }
+
+    .file-select-wrap { position: relative; }
+    .file-select-btn { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12); border-radius: 10px; padding: 5px 10px; font-size: 11px; color: #6B7280; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; white-space: nowrap; max-width: 140px; }
+    .file-select-btn:hover { border-color: #8B5CF6; color: #8B5CF6; }
+    .file-select-btn .material-symbols-outlined { font-size: 15px; }
+    .file-select-btn span.trunc { overflow: hidden; text-overflow: ellipsis; }
+    .file-select-dropdown { position: absolute; bottom: calc(100% + 6px); left: 0; min-width: 220px; background: #fff; border: 1px solid rgba(139,92,246,0.15); border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); padding: 4px; z-index: 30; display: none; }
+    .file-select-dropdown.open { display: block; }
+    .file-select-option { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 12px; color: #374151; cursor: pointer; transition: background 0.15s; }
+    .file-select-option:hover { background: rgba(139,92,246,0.06); }
+    .file-select-option.active { background: rgba(139,92,246,0.1); color: #8B5CF6; font-weight: 600; }
+    .file-select-option .material-symbols-outlined { font-size: 16px; }
+    .file-select-option .fo-check { margin-left: auto; opacity: 0; font-size: 16px; }
+    .file-select-option.active .fo-check { opacity: 1; }
+
+    .edit-textarea { width: 100%; border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; padding: 8px; font-size: inherit; font-family: inherit; resize: vertical; outline: none; background: rgba(255,255,255,0.9); color: #1E1B2E; min-height: 40px; }
+    .edit-textarea:focus { border-color: #8B5CF6; box-shadow: 0 0 0 2px rgba(139,92,246,0.1); }
+    .edit-actions { display: flex; gap: 6px; margin-top: 6px; }
+    .edit-save-btn, .edit-cancel-btn { padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .edit-save-btn { background: #8B5CF6; color: #fff; }
+    .edit-save-btn:hover { background: #7C3AED; }
+    .edit-cancel-btn { background: rgba(139,92,246,0.08); color: #6B7280; }
+    .edit-cancel-btn:hover { background: rgba(139,92,246,0.15); }
+
+    .toast-copied { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1E1B2E; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; z-index: 60; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .toast-copied.show { opacity: 1; }
   </style>
 </head>
 
@@ -206,6 +262,14 @@
           <label for="fileUploadInput" class="p-2 text-apple-subtle hover:text-apple-primary hover:bg-black/5 rounded-xl cursor-pointer transition-colors" title="Attach Document">
             <span class="material-symbols-outlined text-[20px]">attach_file</span>
           </label>
+          <div class="file-select-wrap" id="fileSelectWrap">
+            <button class="file-select-btn" id="fileSelectBtn" title="Select data source">
+              <span class="material-symbols-outlined">database</span>
+              <span class="trunc" id="fileSelectLabel">All Files</span>
+              <span class="material-symbols-outlined" style="font-size:13px">expand_more</span>
+            </button>
+            <div class="file-select-dropdown" id="fileSelectDropdown"></div>
+          </div>
           <textarea id="chatInput" rows="1" placeholder="Ask Aura anything about your files..." class="flex-1 bg-transparent border-none outline-none resize-none text-xs md:text-sm text-apple-dark placeholder-apple-subtle px-2 max-h-24"></textarea>
           <button id="btnSend" class="w-9 h-9 rounded-xl gradient-orb text-white flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-md">
             <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
@@ -263,11 +327,14 @@
     <span class="material-symbols-outlined text-purple-600 text-[18px]" id="toastIcon">info</span>
     <span id="toastMsg">Notification</span>
   </div>
+  <div id="copyToast" class="toast-copied">Copied to clipboard</div>
 
   <script>
     // ── STATE ────────────────────────────────────────────────
     let currentConversationId = null;
     let isProcessing = false;
+    let selectedDocumentId = null;
+    let documentsList = [];
 
     // ── DOM REFERENCES ───────────────────────────────────────
     const $ = (id) => document.getElementById(id);
@@ -282,6 +349,11 @@
     const toastEl = $('toast');
     const toastMsgEl = $('toastMsg');
     const toastIconEl = $('toastIcon');
+    const copyToastEl = $('copyToast');
+    const fileSelectBtn = $('fileSelectBtn');
+    const fileSelectLabel = $('fileSelectLabel');
+    const fileSelectDropdown = $('fileSelectDropdown');
+    const fileSelectWrap = $('fileSelectWrap');
 
     // ── INITIALIZATION ───────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
@@ -317,6 +389,56 @@
           }
         });
       });
+
+      fileSelectBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileSelectDropdown.classList.toggle('open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!fileSelectWrap.contains(e.target)) {
+          fileSelectDropdown.classList.remove('open');
+        }
+      });
+
+      messagesContainer.addEventListener('click', handleMessageAction);
+
+      fileSelectDropdown.addEventListener('click', (e) => {
+        const option = e.target.closest('.file-select-option');
+        if (option) {
+          selectFileSource(option.getAttribute('data-doc-id'));
+        }
+      });
+    }
+
+    // ── FILE SELECTOR ────────────────────────────────────────
+    function renderFileSelector(docs) {
+      documentsList = docs;
+      let html = `<div class="file-select-option ${selectedDocumentId === null ? 'active' : ''}" data-doc-id="all">
+        <span class="material-symbols-outlined">folder_open</span>
+        <span>All Files</span>
+        <span class="material-symbols-outlined fo-check">check</span>
+      </div>`;
+      docs.forEach(d => {
+        html += `<div class="file-select-option ${selectedDocumentId === d.id ? 'active' : ''}" data-doc-id="${d.id}">
+          <span class="material-symbols-outlined">description</span>
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${escapeHtml(d.name)}</span>
+          <span class="material-symbols-outlined fo-check">check</span>
+        </div>`;
+      });
+      fileSelectDropdown.innerHTML = html;
+    }
+
+    function selectFileSource(docId) {
+      selectedDocumentId = docId === 'all' ? null : parseInt(docId, 10);
+      if (selectedDocumentId === null) {
+        fileSelectLabel.textContent = 'All Files';
+      } else {
+        const doc = documentsList.find(d => d.id === selectedDocumentId);
+        fileSelectLabel.textContent = doc ? doc.name : 'All Files';
+      }
+      fileSelectDropdown.classList.remove('open');
+      renderFileSelector(documentsList);
     }
 
     // ── NAVIGATION TABS ──────────────────────────────────────
@@ -355,6 +477,11 @@
         toastEl.classList.remove('opacity-100', 'translate-y-0');
         toastEl.classList.add('opacity-0', 'translate-y-[-10px]');
       }, 2500);
+    }
+
+    function showCopyToast() {
+      copyToastEl.classList.add('show');
+      setTimeout(() => copyToastEl.classList.remove('show'), 1500);
     }
 
     // ── API CALL HANDLER ─────────────────────────────────────
@@ -478,9 +605,17 @@
       messagesContainer.innerHTML = messages.map(m => {
         if (m.role === 'user') {
           return `
-            <div class="flex justify-end anim-fade-in">
-              <div class="max-w-[85%] md:max-w-[75%] gradient-orb text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-xs md:text-sm shadow-md">
-                ${escapeHtml(m.content)}
+            <div class="msg-row flex justify-end anim-fade-in" data-role="user" data-content="${escapeHtml(m.content)}">
+              <div class="max-w-[85%] md:max-w-[75%]">
+                <div class="gradient-orb text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-xs md:text-sm shadow-md msg-text whitespace-pre-wrap">${escapeHtml(m.content)}</div>
+                <div class="msg-actions justify-end">
+                  <button class="msg-action-btn" data-action="edit" title="Edit message">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="msg-action-btn" data-action="copy" title="Copy message">
+                    <span class="material-symbols-outlined">content_copy</span>
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -494,19 +629,29 @@
           `).join('');
 
           return `
-            <div class="flex justify-start anim-fade-in">
-              <div class="max-w-[90%] md:max-w-[85%] apple-glass p-4 rounded-2xl rounded-tl-sm border border-apple-border shadow-sm space-y-3">
-                <div class="flex items-center gap-2 pb-2 border-b border-apple-border/50">
-                  <span class="material-symbols-outlined text-purple-600 text-[18px]">auto_awesome</span>
-                  <span class="text-xs font-bold text-apple-dark">Aura Response</span>
-                </div>
-                <div class="text-xs md:text-sm text-apple-dark leading-relaxed whitespace-pre-wrap">${formatContent(m.content)}</div>
-                ${sources.length ? `
-                  <div class="pt-2 border-t border-apple-border/50">
-                    <p class="text-[10px] font-bold text-apple-subtle uppercase tracking-wider mb-1.5">Cited Sources</p>
-                    <div class="flex flex-wrap gap-1.5">${sourceChips}</div>
+            <div class="msg-row flex justify-start anim-fade-in" data-role="assistant" data-content="${escapeHtml(m.content)}">
+              <div class="max-w-[90%] md:max-w-[85%]">
+                <div class="apple-glass p-4 rounded-2xl rounded-tl-sm border border-apple-border shadow-sm space-y-3">
+                  <div class="flex items-center gap-2 pb-2 border-b border-apple-border/50">
+                    <span class="material-symbols-outlined text-purple-600 text-[18px]">auto_awesome</span>
+                    <span class="text-xs font-bold text-apple-dark">Aura Response</span>
                   </div>
-                ` : ''}
+                  <div class="prose-content text-xs md:text-sm text-apple-dark leading-relaxed msg-text">${formatContent(m.content)}</div>
+                  ${sources.length ? `
+                    <div class="pt-2 border-t border-apple-border/50">
+                      <p class="text-[10px] font-bold text-apple-subtle uppercase tracking-wider mb-1.5">Cited Sources</p>
+                      <div class="flex flex-wrap gap-1.5">${sourceChips}</div>
+                    </div>
+                  ` : ''}
+                </div>
+                <div class="msg-actions">
+                  <button class="msg-action-btn" data-action="copy" title="Copy response">
+                    <span class="material-symbols-outlined">content_copy</span>
+                  </button>
+                  <button class="msg-action-btn" data-action="share" title="Share response">
+                    <span class="material-symbols-outlined">share</span>
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -527,9 +672,17 @@
       welcomeScreen.classList.add('hidden');
 
       messagesContainer.insertAdjacentHTML('beforeend', `
-        <div class="flex justify-end anim-fade-in">
-          <div class="max-w-[85%] gradient-orb text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-xs md:text-sm shadow-md">
-            ${escapeHtml(text)}
+        <div class="msg-row flex justify-end anim-fade-in" data-role="user" data-content="${escapeHtml(text)}">
+          <div class="max-w-[85%] md:max-w-[75%]">
+            <div class="gradient-orb text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-xs md:text-sm shadow-md msg-text whitespace-pre-wrap">${escapeHtml(text)}</div>
+            <div class="msg-actions justify-end">
+              <button class="msg-action-btn" data-action="edit" title="Edit message">
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+              <button class="msg-action-btn" data-action="copy" title="Copy message">
+                <span class="material-symbols-outlined">content_copy</span>
+              </button>
+            </div>
           </div>
         </div>
       `);
@@ -549,6 +702,7 @@
 
       try {
         const payload = { message: text, conversation_id: currentConversationId };
+        if (selectedDocumentId) payload.document_id = selectedDocumentId;
         const res = await apiRequest('/api/chat', 'POST', payload);
         currentConversationId = res.conversation_id;
         
@@ -586,11 +740,124 @@
       }
     }
 
+    // ── MESSAGE ACTIONS (EDIT / COPY / SHARE) ────────────────
+    function handleMessageAction(e) {
+      const btn = e.target.closest('.msg-action-btn');
+      if (!btn) return;
+
+      const action = btn.getAttribute('data-action');
+      const msgRow = btn.closest('.msg-row');
+      if (!msgRow) return;
+
+      const role = msgRow.getAttribute('data-role');
+      const rawContent = msgRow.getAttribute('data-content');
+
+      if (action === 'copy') {
+        copyToClipboard(rawContent);
+      } else if (action === 'share') {
+        shareContent(rawContent);
+      } else if (action === 'edit' && role === 'user') {
+        startEditMessage(msgRow, rawContent);
+      }
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showCopyToast();
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); showCopyToast(); }
+      catch(e) { showToast('Failed to copy', 'error'); }
+      document.body.removeChild(ta);
+    }
+
+    function shareContent(text) {
+      if (navigator.share) {
+        navigator.share({ title: 'Aura AI Response', text: text }).catch(() => {});
+      } else {
+        copyToClipboard(text);
+        showToast('Copied to clipboard (share not supported)', 'content_copy');
+      }
+    }
+
+    function startEditMessage(msgRow, originalContent) {
+      const msgTextEl = msgRow.querySelector('.msg-text');
+      const actionsEl = msgRow.querySelector('.msg-actions');
+      if (!msgTextEl || !actionsEl) return;
+
+      actionsEl.style.display = 'none';
+
+      const editWrap = document.createElement('div');
+      editWrap.className = 'edit-wrap';
+      editWrap.innerHTML = `
+        <textarea class="edit-textarea" rows="3">${escapeHtml(originalContent)}</textarea>
+        <div class="edit-actions">
+          <button class="edit-save-btn">Save</button>
+          <button class="edit-cancel-btn">Cancel</button>
+        </div>
+      `;
+
+      msgTextEl.style.display = 'none';
+      msgTextEl.parentNode.insertBefore(editWrap, actionsEl);
+
+      const textarea = editWrap.querySelector('textarea');
+      textarea.focus();
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+
+      textarea.addEventListener('input', () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+      });
+
+      editWrap.querySelector('.edit-save-btn').addEventListener('click', () => {
+        const newContent = textarea.value.trim();
+        if (newContent) {
+          msgRow.setAttribute('data-content', newContent);
+          msgTextEl.textContent = newContent;
+        }
+        editWrap.remove();
+        msgTextEl.style.display = '';
+        actionsEl.style.display = '';
+      });
+
+      editWrap.querySelector('.edit-cancel-btn').addEventListener('click', () => {
+        editWrap.remove();
+        msgTextEl.style.display = '';
+        actionsEl.style.display = '';
+      });
+
+      textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          editWrap.querySelector('.edit-save-btn').click();
+        }
+        if (e.key === 'Escape') {
+          editWrap.querySelector('.edit-cancel-btn').click();
+        }
+      });
+    }
+
     // ── DOCUMENTS & WORKSPACE ────────────────────────────────
     async function loadDocuments() {
       try {
         const data = await apiRequest('/api/documents');
-        renderDocuments(data.documents || []);
+        const docs = data.documents || [];
+        renderDocuments(docs);
+        renderFileSelector(docs);
       } catch (e) {
         console.error('Document load error', e);
       }
@@ -683,6 +950,10 @@
     async function deleteDoc(id) {
       try {
         await apiRequest(`/api/documents/${id}`, 'DELETE');
+        if (selectedDocumentId === id) {
+          selectedDocumentId = null;
+          fileSelectLabel.textContent = 'All Files';
+        }
         showToast('Document removed', 'delete');
         loadDocuments();
       } catch (e) {
@@ -702,11 +973,84 @@
     }
 
     function formatContent(content) {
-      return escapeHtml(content)
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`(.*?)`/g, '<code class="bg-purple-100/50 px-1 rounded text-[11px]">$1</code>');
+      if (!content) return '';
+      const escaped = escapeHtml(content);
+      let html = escaped;
+
+      // Code blocks: ```lang\n...\n```
+      html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+        const langLabel = lang ? `<span class="code-block-lang">${lang}</span>` : '';
+        return `<div class="code-block-wrap"><pre>${langLabel}<button class="code-copy-btn" onclick="copyCodeBlock(this)">Copy</button><code>${code.trim()}</code></pre></div>`;
+      });
+
+      // Inline code: `...`
+      html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+      // Headings: ### ... and ## ... and # ...
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+
+      // Horizontal rule: ---
+      html = html.replace(/^---$/gm, '<hr>');
+
+      // Bold and italic
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+      // Blockquotes: > ...
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+      // Unordered lists: - ... or * ...
+      html = html.replace(/^(?:-|\*) (.+)$/gm, '<li class="ul-item">$1</li>');
+      html = html.replace(/((?:<li class="ul-item">.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+
+      // Ordered lists: 1. ... 2. ...
+      html = html.replace(/^\d+\. (.+)$/gm, '<li class="ol-item">$1</li>');
+      html = html.replace(/((?:<li class="ol-item">.*<\/li>\n?)+)/g, '<ol>$1</ol>');
+
+      // Links: [text](url)
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+      // Line breaks: double newline -> paragraph, single -> <br>
+      html = html.replace(/\n\n+/g, '</p><p>');
+      html = html.replace(/\n/g, '<br>');
+
+      // Clean up empty paragraphs and wrap in prose
+      html = '<p>' + html + '</p>';
+      html = html.replace(/<p>\s*<\/p>/g, '');
+      html = html.replace(/<p>\s*(<h[23]>)/g, '$1');
+      html = html.replace(/(<\/h[23]>)\s*<\/p>/g, '$1');
+      html = html.replace(/<p>\s*(<div class="code-block-wrap">)/g, '$1');
+      html = html.replace(/(<\/pre>)\s*<\/p>/g, '$1');
+      html = html.replace(/<p>\s*(<ul>)/g, '$1');
+      html = html.replace(/(<\/ul>)\s*<\/p>/g, '$1');
+      html = html.replace(/<p>\s*(<ol>)/g, '$1');
+      html = html.replace(/(<\/ol>)\s*<\/p>/g, '$1');
+      html = html.replace(/<p>\s*(<hr>)/g, '$1');
+      html = html.replace(/(<hr>)\s*<\/p>/g, '$1');
+      html = html.replace(/<p>\s*(<blockquote>)/g, '$1');
+      html = html.replace(/(<\/blockquote>)\s*<\/p>/g, '$1');
+
+      return html;
     }
+
+    // Global function for code block copy buttons
+    window.copyCodeBlock = function(btn) {
+      const pre = btn.closest('pre');
+      if (!pre) return;
+      const code = pre.querySelector('code');
+      if (!code) return;
+      const text = code.textContent;
+      copyToClipboard(text);
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    };
+
+    // Close file dropdown on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') fileSelectDropdown.classList.remove('open');
+    });
   </script>
 </body>
 </html>

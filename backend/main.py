@@ -164,7 +164,7 @@ def process_document(doc_id, file_path):
     logger.info("Indexed %d chunks from %s", total_chunks, os.path.basename(file_path))
     return total_chunks
 
-def search_relevant_chunks(query, limit=5):
+def search_relevant_chunks(query, limit=5, document_id=None):
     query_lower = query.lower()
     query_words = set(re.findall(r'\w+', query_lower))
     query_words = {w for w in query_words if len(w) > 2}
@@ -173,12 +173,20 @@ def search_relevant_chunks(query, limit=5):
         return []
 
     with get_db() as conn:
-        rows = conn.execute('''
-            SELECT dc.id, dc.document_id, dc.page, dc.content, d.name
-            FROM document_chunks dc
-            JOIN documents d ON dc.document_id = d.id
-            WHERE d.status = 'indexed'
-        ''').fetchall()
+        if document_id:
+            rows = conn.execute('''
+                SELECT dc.id, dc.document_id, dc.page, dc.content, d.name
+                FROM document_chunks dc
+                JOIN documents d ON dc.document_id = d.id
+                WHERE d.status = 'indexed' AND d.id = ?
+            ''', (document_id,)).fetchall()
+        else:
+            rows = conn.execute('''
+                SELECT dc.id, dc.document_id, dc.page, dc.content, d.name
+                FROM document_chunks dc
+                JOIN documents d ON dc.document_id = d.id
+                WHERE d.status = 'indexed'
+            ''').fetchall()
 
     scored = []
     for row in rows:
@@ -219,11 +227,16 @@ def get_conversation_history(conv_id, limit=10):
         logger.warning("Failed to fetch conversation history: %s", e)
         return []
 
-def generate_response(user_message, conversation_id=None):
-    doc_names = get_document_context()
+def generate_response(user_message, conversation_id=None, document_id=None):
+    if document_id:
+        with get_db() as conn:
+            row = conn.execute('SELECT name FROM documents WHERE id = ?', (document_id,)).fetchone()
+            doc_names = [row['name']] if row else []
+    else:
+        doc_names = get_document_context()
     doc_list = ', '.join(doc_names) if doc_names else 'No documents currently indexed.'
 
-    relevant_chunks = search_relevant_chunks(user_message, limit=5)
+    relevant_chunks = search_relevant_chunks(user_message, limit=5, document_id=document_id)
 
     if relevant_chunks:
         context_parts = []
@@ -248,7 +261,16 @@ def generate_response(user_message, conversation_id=None):
         "- When referencing information, cite the document name and page number.\n"
         "- If the document content doesn't contain enough information to answer, "
         "say so honestly.\n"
-        "- Format responses clearly with markdown where appropriate."
+        "- Format your response using clear markdown structure:\n"
+        "  - Use ## or ### for headings and subheadings to organize sections.\n"
+        "  - Use **bold** for key terms and important findings.\n"
+        "  - Use numbered lists (1. 2. 3.) for sequential steps or ranked items.\n"
+        "  - Use bullet points (- or *) for non-sequential items.\n"
+        "  - Use paragraph breaks to separate distinct ideas.\n"
+        "  - Use ``` code blocks for any code, commands, or structured data.\n"
+        "  - Use > blockquotes for important callouts or citations.\n"
+        "- Present the answer in a clean, structured, professional format.\n"
+        "- Group related information under descriptive subheadings."
     )
 
     messages = [{'role': 'system', 'content': system_prompt}]
@@ -387,6 +409,7 @@ def chat():
         return jsonify({'error': 'Message content cannot be empty'}), 400
 
     conv_id = data.get('conversation_id')
+    document_id = data.get('document_id')
 
     try:
         with get_db() as conn:
@@ -406,7 +429,7 @@ def chat():
             )
             conn.commit()
 
-            response_text, sources = generate_response(user_message, conv_id)
+            response_text, sources = generate_response(user_message, conv_id, document_id=document_id)
 
             conn.execute(
                 'INSERT INTO messages (conversation_id, role, content, sources) VALUES (?, ?, ?, ?)',
