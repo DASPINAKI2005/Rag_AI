@@ -2,6 +2,8 @@
 
 A full-stack **Retrieval-Augmented Generation (RAG)** application that lets you upload documents, automatically extracts and indexes their content into a local SQLite database, and answers natural-language questions about them using an LLM via the **Groq API** (`openai/gpt-oss-120b`).
 
+🌐 **Live Demo:** [https://rag-ai-fj3d.onrender.com](https://rag-ai-fj3d.onrender.com)
+
 ---
 
 ## 🎥 Project Demo
