@@ -745,14 +745,12 @@
     });
 
     async function checkApiKeyAndInit() {
-      let configured = false;
-      try {
-        const data = await apiRequest('/api/config/groq-key');
-        configured = data.configured;
-        updateSettingsKeyStatus(data);
-      } catch (e) {
-        // will show modal
-      }
+      const storedKey = localStorage.getItem('aura_groq_api_key');
+      const configured = !!storedKey;
+      updateSettingsKeyStatus({
+        configured,
+        masked_key: configured ? storedKey.slice(0, 4) + '****' + storedKey.slice(-4) : ''
+      });
       if (!configured) {
         showApiKeyModal(true);
       }
@@ -811,23 +809,42 @@
         return;
       }
 
+      if (!key.startsWith('gsk_')) {
+        errEl.textContent = 'Invalid key format. Groq API keys start with gsk_.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Save API Key';
+        return;
+      }
+
       btn.disabled = true;
-      btn.textContent = 'Saving...';
+      btn.textContent = 'Validating...';
 
       try {
-        const res = await apiRequest('/api/config/groq-key', 'POST', { api_key: key });
-        if (res.success) {
-          const keyData = await apiRequest('/api/config/groq-key');
-          updateSettingsKeyStatus(keyData);
-          successEl.textContent = 'API key saved successfully!';
+        const res = await fetch('/api/config/groq-key/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Groq-Api-Key': key },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+
+        if (data.valid) {
+          localStorage.setItem('aura_groq_api_key', key);
+          updateSettingsKeyStatus({ configured: true, masked_key: key.slice(0, 4) + '****' + key.slice(-4) });
+          successEl.textContent = 'API key validated and saved!';
           successEl.style.display = 'block';
           setTimeout(() => {
             hideApiKeyModal();
             showToast('Groq API key configured', 'check_circle');
           }, 800);
+        } else {
+          errEl.textContent = data.error || 'Invalid API key. Please check and try again.';
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Save API Key';
         }
       } catch (e) {
-        errEl.textContent = e.message || 'Failed to save API key.';
+        errEl.textContent = e.message || 'Failed to validate API key.';
         errEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = 'Save API Key';
@@ -1072,6 +1089,10 @@
     // ── API CALL HANDLER ─────────────────────────────────────
     async function apiRequest(endpoint, method = 'GET', body = null) {
       const options = { method, headers: {} };
+      const storedKey = localStorage.getItem('aura_groq_api_key');
+      if (storedKey) {
+        options.headers['X-Groq-Api-Key'] = storedKey;
+      }
       if (body) {
         options.headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(body);
@@ -1654,7 +1675,10 @@
 
       try {
         showToast('Uploading files...', 'cloud_upload');
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const uploadHeaders = {};
+        const storedKey = localStorage.getItem('aura_groq_api_key');
+        if (storedKey) uploadHeaders['X-Groq-Api-Key'] = storedKey;
+        const res = await fetch('/api/upload', { method: 'POST', body: formData, headers: uploadHeaders });
         if (!res.ok) throw new Error('Upload failed');
         const data = await res.json();
         if (data.errors && data.errors.length) {

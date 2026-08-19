@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
-CORS(app, origins=["http://127.0.0.1:5000", "http://localhost:5000"])
+CORS(app, origins=["*"])
 
 # ─── Configuration ──────────────────────────────────────
 DATABASE_PATH = os.getenv('DATABASE_PATH', 'database/data.db')
@@ -38,26 +38,9 @@ GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 150
 
-# ─── Runtime Config (persistent API key) ─────────────────
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
-
-def _load_config():
-    try:
-        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
-
-def _save_config(cfg):
-    with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
-        json.dump(cfg, f, indent=2)
-
+# ─── Per-User API Key Resolution ──────────────────────────
 def get_groq_key():
-    cfg = _load_config()
-    key = cfg.get('groq_api_key', '').strip()
-    if key:
-        return key
-    return GROQ_API_KEY
+    return request.headers.get('X-Groq-Api-Key', '').strip() or GROQ_API_KEY
 
 # ─── Database ────────────────────────────────────────────
 def get_db():
@@ -647,23 +630,37 @@ def health_check():
 
 @app.route('/api/config/groq-key', methods=['GET'])
 def get_groq_key_status():
-    key = get_groq_key()
-    if key:
-        masked = key[:4] + '****' + key[-4:] if len(key) > 8 else '****'
-        return jsonify({'configured': True, 'masked_key': masked})
-    return jsonify({'configured': False, 'masked_key': ''})
+    return jsonify({'configured': bool(get_groq_key()), 'masked_key': ''})
 
-@app.route('/api/config/groq-key', methods=['POST'])
-def set_groq_key():
-    data = request.get_json(silent=True) or {}
-    key = (data.get('api_key') or '').strip()
+@app.route('/api/config/groq-key/validate', methods=['POST'])
+def validate_groq_key():
+    key = request.headers.get('X-Groq-Api-Key', '').strip()
     if not key:
-        return jsonify({'error': 'API key cannot be empty'}), 400
-    cfg = _load_config()
-    cfg['groq_api_key'] = key
-    _save_config(cfg)
-    logger.info("Groq API key saved via app config")
-    return jsonify({'success': True, 'configured': True})
+        return jsonify({'valid': False, 'error': 'No API key provided.'}), 400
+    try:
+        resp = http_requests.post(
+            GROQ_API_URL,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {key}'
+            },
+            json={
+                'model': GROQ_MODEL,
+                'messages': [{'role': 'user', 'content': 'hi'}],
+                'max_tokens': 5
+            },
+            timeout=10
+        )
+        if resp.status_code == 200:
+            return jsonify({'valid': True})
+        elif resp.status_code in (401, 403):
+            return jsonify({'valid': False, 'error': 'Invalid API key. Please check your Groq API key and try again.'}), 401
+        else:
+            return jsonify({'valid': False, 'error': f'Unexpected response from Groq (HTTP {resp.status_code}).'}), 502
+    except http_requests.exceptions.Timeout:
+        return jsonify({'valid': False, 'error': 'Validation request timed out. Please try again.'}), 504
+    except Exception as e:
+        return jsonify({'valid': False, 'error': f'Connection error: {str(e)}'}), 500
 
 # ─── Follow-Up Suggestions Generator ──────────────────────
 def generate_followups(user_message, response_text, sources, mode=None):
@@ -884,4 +881,5 @@ def index_existing_documents():
 
 if __name__ == '__main__':
     index_existing_documents()
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
