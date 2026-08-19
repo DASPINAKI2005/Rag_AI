@@ -4,6 +4,14 @@ A full-stack **Retrieval-Augmented Generation (RAG)** application that lets you 
 
 ---
 
+## 🎥 Project Demo
+
+Watch the full demonstration below to see Aura Intelligence in action, including document upload, RAG chat, analysis modes, document comparison, and the overall workflow.
+
+> **[▶ Click here to watch the full demo video](https://github.com/DASPINAKI2005/Rag_AI/blob/master/Video%20Project%203.mp4)** — opens GitHub's built-in video player.
+
+---
+
 ## Overview
 
 Aura Intelligence is a self-contained document Q&A system. Users upload files through a glassmorphic Apple-inspired web interface; the backend extracts text, chunks it, and stores it in SQLite. When the user asks a question, the system retrieves the most relevant chunks using keyword-based scoring, injects them as context into an LLM prompt, and returns a cited, structured answer.
