@@ -38,6 +38,27 @@ GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 150
 
+# ─── Runtime Config (persistent API key) ─────────────────
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+
+def _load_config():
+    try:
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def _save_config(cfg):
+    with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, indent=2)
+
+def get_groq_key():
+    cfg = _load_config()
+    key = cfg.get('groq_api_key', '').strip()
+    if key:
+        return key
+    return GROQ_API_KEY
+
 # ─── Database ────────────────────────────────────────────
 def get_db():
     conn = sqlite3.connect(DATABASE_PATH)
@@ -289,12 +310,12 @@ def generate_response(user_message, conversation_id=None, document_id=None):
             'match': min(99, 50 + chunk['score'] * 10)
         })
 
-    if not GROQ_API_KEY:
+    active_key = get_groq_key()
+    if not active_key:
         logger.warning("GROQ_API_KEY not set — returning fallback response")
         fallback = (
             "I'm Aura Intelligence. Your Groq API key is not configured, "
-            "so I cannot process AI requests. Please set `GROQ_API_KEY` in your `.env` file "
-            "and restart the server."
+            "so I cannot process AI requests. Please set your Groq API key in the app."
         )
         return fallback, []
 
@@ -303,7 +324,7 @@ def generate_response(user_message, conversation_id=None, document_id=None):
             GROQ_API_URL,
             headers={
                 'Content-Type': 'application/json',
-                'Authorization': f'Bearer {GROQ_API_KEY}'
+                'Authorization': f'Bearer {active_key}'
             },
             json={
                 'model': GROQ_MODEL,
@@ -538,10 +559,30 @@ def health_check():
         doc_count = 0
     return jsonify({
         'status': 'ok',
-        'groq_configured': bool(GROQ_API_KEY),
+        'groq_configured': bool(get_groq_key()),
         'documents': doc_count,
         'chunks_indexed': chunk_count
     })
+
+@app.route('/api/config/groq-key', methods=['GET'])
+def get_groq_key_status():
+    key = get_groq_key()
+    if key:
+        masked = key[:4] + '****' + key[-4:] if len(key) > 8 else '****'
+        return jsonify({'configured': True, 'masked_key': masked})
+    return jsonify({'configured': False, 'masked_key': ''})
+
+@app.route('/api/config/groq-key', methods=['POST'])
+def set_groq_key():
+    data = request.get_json(silent=True) or {}
+    key = (data.get('api_key') or '').strip()
+    if not key:
+        return jsonify({'error': 'API key cannot be empty'}), 400
+    cfg = _load_config()
+    cfg['groq_api_key'] = key
+    _save_config(cfg)
+    logger.info("Groq API key saved via app config")
+    return jsonify({'success': True, 'configured': True})
 
 # ─── Startup: index any unindexed documents ──────────────
 def index_existing_documents():

@@ -182,6 +182,32 @@
     .voice-ctrl-cancel:hover { background: rgba(107,114,128,0.2); }
 
     .voice-unsupported { text-align: center; padding: 12px; font-size: 11px; color: #6B7280; }
+
+    .apikey-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .apikey-overlay.hidden { display: none; }
+    .apikey-modal { background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.25); width: 90%; max-width: 420px; padding: 32px; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .apikey-modal h2 { font-size: 18px; font-weight: 800; color: #1E1B2E; margin-bottom: 6px; }
+    .apikey-modal p { font-size: 12px; color: #6B7280; line-height: 1.6; margin-bottom: 4px; }
+    .apikey-modal a { color: #8B5CF6; text-decoration: underline; font-weight: 600; }
+    .apikey-modal input[type="text"], .apikey-modal input[type="password"] { width: 100%; border: 1px solid rgba(139,92,246,0.25); border-radius: 12px; padding: 12px 14px; font-size: 13px; outline: none; margin-top: 14px; transition: border-color 0.2s; font-family: 'SF Mono', 'Fira Code', monospace; letter-spacing: 0.5px; background: rgba(139,92,246,0.03); }
+    .apikey-modal input:focus { border-color: #8B5CF6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+    .apikey-modal .apikey-save-btn { width: 100%; margin-top: 16px; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, #8B5CF6, #EC4899); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+    .apikey-modal .apikey-save-btn:hover { opacity: 0.92; }
+    .apikey-modal .apikey-save-btn:active { transform: scale(0.98); }
+    .apikey-modal .apikey-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .apikey-modal .apikey-error { color: #EF4444; font-size: 11px; margin-top: 8px; display: none; }
+    .apikey-modal .apikey-success { color: #16A34A; font-size: 11px; margin-top: 8px; display: none; }
+    .apikey-modal .apikey-icon { width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(135deg, #8B5CF6, #EC4899); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .apikey-modal .apikey-icon .material-symbols-outlined { color: #fff; font-size: 24px; }
+    .apikey-close-btn { position: absolute; top: 12px; right: 12px; background: rgba(139,92,246,0.08); border: none; border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6B7280; transition: all 0.15s; }
+    .apikey-close-btn:hover { background: rgba(139,92,246,0.15); color: #1E1B2E; }
+    .apikey-close-btn.hidden { display: none; }
+    .apikey-modal { position: relative; }
+    .settings-key-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(139,92,246,0.1); }
+    .settings-key-row .settings-key-label { font-size: 12px; font-weight: 700; color: #1E1B2E; }
+    .settings-key-row .settings-key-status { font-size: 11px; color: #6B7280; }
+    .settings-key-row .settings-key-change { padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(139,92,246,0.2); background: rgba(139,92,246,0.06); color: #8B5CF6; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .settings-key-row .settings-key-change:hover { background: rgba(139,92,246,0.12); }
   </style>
 </head>
 
@@ -413,6 +439,13 @@
               <option>Ultra Fast</option>
             </select>
           </div>
+          <div class="settings-key-row">
+            <div>
+              <p class="settings-key-label">Groq API Key</p>
+              <p class="settings-key-status" id="settingsKeyStatus">Checking...</p>
+            </div>
+            <button id="changeApiKeyBtn" class="settings-key-change">Change API Key</button>
+          </div>
         </div>
       </div>
     </div>
@@ -455,6 +488,25 @@
     </div>
   </div>
 
+  <!-- ================= API KEY SETUP MODAL ================= -->
+  <div id="apiKeyModal" class="apikey-overlay hidden">
+    <div class="apikey-modal">
+      <button id="apiKeyCloseBtn" class="apikey-close-btn hidden" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="apikey-icon">
+        <span class="material-symbols-outlined">key</span>
+      </div>
+      <h2>Enter your Groq API Key</h2>
+      <p>First, log in with Google, then create your API key and paste it here.</p>
+      <p><a href="https://console.groq.com/keys" target="_blank" rel="noopener">https://console.groq.com/keys</a></p>
+      <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" spellcheck="false" />
+      <div id="apiKeyError" class="apikey-error"></div>
+      <div id="apiKeySuccess" class="apikey-success"></div>
+      <button id="apiKeySaveBtn" class="apikey-save-btn">Save API Key</button>
+    </div>
+  </div>
+
   <script>
     // ── STATE ────────────────────────────────────────────────
     let currentConversationId = null;
@@ -483,10 +535,98 @@
 
     // ── INITIALIZATION ───────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
+      checkApiKeyAndInit();
+    });
+
+    async function checkApiKeyAndInit() {
+      let configured = false;
+      try {
+        const data = await apiRequest('/api/config/groq-key');
+        configured = data.configured;
+        updateSettingsKeyStatus(data);
+      } catch (e) {
+        // will show modal
+      }
+      if (!configured) {
+        showApiKeyModal(true);
+      }
       loadConversations();
       loadDocuments();
       bindEvents();
-    });
+    }
+
+    async function updateSettingsKeyStatus(data) {
+      const el = $('settingsKeyStatus');
+      if (!el) return;
+      if (data && data.configured) {
+        el.textContent = 'Configured (' + (data.masked_key || '****') + ')';
+        el.style.color = '#16A34A';
+      } else {
+        el.textContent = 'Not configured';
+        el.style.color = '#EF4444';
+      }
+    }
+
+    function showApiKeyModal(mandatory) {
+      const modal = $('apiKeyModal');
+      const closeBtn = $('apiKeyCloseBtn');
+      modal.classList.remove('hidden');
+      modal._mandatory = mandatory;
+      if (mandatory) {
+        closeBtn.classList.add('hidden');
+      } else {
+        closeBtn.classList.remove('hidden');
+      }
+      $('apiKeyInput').value = '';
+      $('apiKeyError').style.display = 'none';
+      $('apiKeySuccess').style.display = 'none';
+      $('apiKeySaveBtn').disabled = false;
+      $('apiKeySaveBtn').textContent = 'Save API Key';
+      setTimeout(() => $('apiKeyInput').focus(), 100);
+    }
+
+    function hideApiKeyModal() {
+      $('apiKeyModal').classList.add('hidden');
+    }
+
+    async function saveApiKey() {
+      const input = $('apiKeyInput');
+      const errEl = $('apiKeyError');
+      const successEl = $('apiKeySuccess');
+      const btn = $('apiKeySaveBtn');
+      const key = input.value.trim();
+
+      errEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      if (!key) {
+        errEl.textContent = 'Please enter a valid API key.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await apiRequest('/api/config/groq-key', 'POST', { api_key: key });
+        if (res.success) {
+          const keyData = await apiRequest('/api/config/groq-key');
+          updateSettingsKeyStatus(keyData);
+          successEl.textContent = 'API key saved successfully!';
+          successEl.style.display = 'block';
+          setTimeout(() => {
+            hideApiKeyModal();
+            showToast('Groq API key configured', 'check_circle');
+          }, 800);
+        }
+      } catch (e) {
+        errEl.textContent = e.message || 'Failed to save API key.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Save API Key';
+      }
+    }
 
     function bindEvents() {
       $('btnNewChat').addEventListener('click', createNewChat);
@@ -559,6 +699,23 @@
         shareViaLinkedIn($('shareModal')._shareText);
         closeShareModal();
       });
+
+      $('apiKeySaveBtn').addEventListener('click', saveApiKey);
+      $('apiKeyInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveApiKey();
+      });
+
+      $('apiKeyCloseBtn').addEventListener('click', hideApiKeyModal);
+      $('apiKeyModal').addEventListener('click', (e) => {
+        if (e.target === $('apiKeyModal') && !$('apiKeyModal')._mandatory) {
+          hideApiKeyModal();
+        }
+      });
+
+      const changeKeyBtn = $('changeApiKeyBtn');
+      if (changeKeyBtn) {
+        changeKeyBtn.addEventListener('click', () => showApiKeyModal(false));
+      }
     }
 
     // ── FILE SELECTOR ────────────────────────────────────────
@@ -1236,7 +1393,12 @@
 
     // Close file dropdown on Escape
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') fileSelectDropdown.classList.remove('open');
+      if (e.key === 'Escape') {
+        fileSelectDropdown.classList.remove('open');
+        if (!$('apiKeyModal').classList.contains('hidden') && !$('apiKeyModal')._mandatory) {
+          hideApiKeyModal();
+        }
+      }
     });
 
     // ── VOICE INPUT ──────────────────────────────────────────
