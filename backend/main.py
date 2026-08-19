@@ -248,7 +248,7 @@ def get_conversation_history(conv_id, limit=10):
         logger.warning("Failed to fetch conversation history: %s", e)
         return []
 
-def generate_response(user_message, conversation_id=None, document_id=None):
+def generate_response(user_message, conversation_id=None, document_id=None, mode=None, section_context=None, style=None):
     if document_id:
         with get_db() as conn:
             row = conn.execute('SELECT name FROM documents WHERE id = ?', (document_id,)).fetchone()
@@ -257,7 +257,11 @@ def generate_response(user_message, conversation_id=None, document_id=None):
         doc_names = get_document_context()
     doc_list = ', '.join(doc_names) if doc_names else 'No documents currently indexed.'
 
-    relevant_chunks = search_relevant_chunks(user_message, limit=5, document_id=document_id)
+    search_query = user_message
+    if section_context:
+        search_query = user_message + ' ' + section_context[:300]
+
+    relevant_chunks = search_relevant_chunks(search_query, limit=5, document_id=document_id)
 
     if relevant_chunks:
         context_parts = []
@@ -269,14 +273,65 @@ def generate_response(user_message, conversation_id=None, document_id=None):
     else:
         rag_context = "No relevant document content found for this query."
 
-    system_prompt = (
+    mode_instructions = {
+        'summarize': (
+            "Provide a concise but comprehensive summary of the relevant document content. "
+            "Organize by main themes. Use bullet points for key takeaways. "
+            "Include an executive summary at the top."
+        ),
+        'compare': (
+            "Compare and contrast the provided content. Identify: "
+            "(1) Key similarities, (2) Key differences, (3) Contradictions or conflicts, "
+            "(4) Missing information in one source vs the other. "
+            "Use a structured comparison format with clear sections."
+        ),
+        'extract': (
+            "Extract and list all important data points, facts, figures, dates, names, "
+            "requirements, and specifications from the document content. "
+            "Organize extracted data in a structured format (lists, tables where appropriate)."
+        ),
+        'explain': (
+            "Provide a clear, thorough explanation of the concepts and topics in the documents. "
+            "Break down complex ideas into simple terms. Use analogies where helpful. "
+            "Structure the explanation from basic to advanced concepts."
+        ),
+        'quiz': (
+            "Generate a quiz based on the document content. Create 5-8 questions of varying "
+            "difficulty (multiple choice and short answer). After each question, provide the "
+            "answer and which source it came from. End with a scoring guide."
+        )
+    }
+
+    mode_key = (mode or '').lower().strip()
+    system_parts = [
         "You are Aura Intelligence, an enterprise-grade RAG assistant. "
         "You help users analyze and query their uploaded documents.\n\n"
         "AVAILABLE DOCUMENTS: " + doc_list + "\n\n"
         "RELEVANT DOCUMENT CONTENT (retrieved for this query):\n"
         "--------------------------------------\n"
         + rag_context + "\n"
-        "--------------------------------------\n\n"
+        "--------------------------------------\n"
+    ]
+
+    if mode_key in mode_instructions:
+        system_parts.append(
+            "MODE INSTRUCTIONS — The user has selected the \"" + mode_key.upper() + "\" mode:\n"
+            + mode_instructions[mode_key] + "\n\n"
+        )
+    else:
+        system_parts.append(
+            "MODE: Standard Q&A — Answer the user's question directly and thoroughly.\n\n"
+        )
+
+    if section_context:
+        trimmed_ctx = section_context[:500]
+        system_parts.append(
+            "SECTION CONTEXT — The user is asking about this specific section/passage from a previous response:\n"
+            '"' + trimmed_ctx + '"\n'
+            "Focus your answer on this specific context. Reference it explicitly.\n\n"
+        )
+
+    system_parts.append(
         "INSTRUCTIONS:\n"
         "- Use the document content above to answer the user's question accurately.\n"
         "- When referencing information, cite the document name and page number.\n"
@@ -294,6 +349,20 @@ def generate_response(user_message, conversation_id=None, document_id=None):
         "- Group related information under descriptive subheadings."
     )
 
+    system_prompt = ''.join(system_parts)
+
+    if style:
+        style_map = {
+            'shorter': '\n\nKeep your response brief and concise. Use bullet points. Max 3-4 paragraphs.',
+            'detailed': '\n\nProvide an extremely detailed and comprehensive response. Cover every aspect thoroughly.',
+            'simplify': '\n\nExplain using simple, everyday language. Avoid jargon. Assume the reader is a beginner.',
+            'professional': '\n\nWrite in a formal, professional tone suitable for a business document or report.',
+            'technical': '\n\nWrite in a highly technical manner with precise terminology. Assume an expert audience.'
+        }
+        style_lower = style.lower().strip()
+        if style_lower in style_map:
+            system_prompt += style_map[style_lower]
+
     messages = [{'role': 'system', 'content': system_prompt}]
 
     if conversation_id:
@@ -307,7 +376,8 @@ def generate_response(user_message, conversation_id=None, document_id=None):
         sources.append({
             'name': chunk['document_name'],
             'page': chunk['page'],
-            'match': min(99, 50 + chunk['score'] * 10)
+            'match': min(99, 50 + chunk['score'] * 10),
+            'excerpt': chunk['content'][:200]
         })
 
     active_key = get_groq_key()
@@ -431,6 +501,10 @@ def chat():
 
     conv_id = data.get('conversation_id')
     document_id = data.get('document_id')
+    mode = data.get('mode')
+    section_context = data.get('section_context')
+    style = data.get('style')
+    branch_from = data.get('branch_from')
 
     try:
         with get_db() as conn:
@@ -450,7 +524,10 @@ def chat():
             )
             conn.commit()
 
-            response_text, sources = generate_response(user_message, conv_id, document_id=document_id)
+            response_text, sources = generate_response(
+                user_message, conv_id, document_id=document_id,
+                mode=mode, section_context=section_context, style=style
+            )
 
             conn.execute(
                 'INSERT INTO messages (conversation_id, role, content, sources) VALUES (?, ?, ?, ?)',
@@ -458,10 +535,14 @@ def chat():
             )
             conn.commit()
 
+            followups = generate_followups(user_message, response_text, sources, mode)
+
             return jsonify({
                 'conversation_id': conv_id,
                 'response': response_text,
-                'sources': sources
+                'sources': sources,
+                'followups': followups,
+                'mode': mode
             })
     except Exception as e:
         logger.error("Chat processing failed: %s", e)
@@ -583,6 +664,207 @@ def set_groq_key():
     _save_config(cfg)
     logger.info("Groq API key saved via app config")
     return jsonify({'success': True, 'configured': True})
+
+# ─── Follow-Up Suggestions Generator ──────────────────────
+def generate_followups(user_message, response_text, sources, mode=None):
+    followups = []
+    if sources:
+        followups.append("Show me the evidence for that")
+        followups.append("Summarize this response")
+    followups.append("Explain this further")
+    if len(sources) > 1:
+        followups.append("Compare the sources")
+    followups.append("Ask a deeper question")
+    if not mode:
+        followups.append("Extract key points")
+    return followups[:5]
+
+# ─── Document Compare Endpoint ────────────────────────────
+@app.route('/api/compare', methods=['POST'])
+def compare_documents():
+    data = request.get_json(silent=True) or {}
+    doc_id_a = data.get('document_a')
+    doc_id_b = data.get('document_b')
+
+    if not doc_id_a or not doc_id_b:
+        return jsonify({'error': 'Two document IDs required'}), 400
+
+    try:
+        with get_db() as conn:
+            doc_a = conn.execute('SELECT * FROM documents WHERE id = ?', (doc_id_a,)).fetchone()
+            doc_b = conn.execute('SELECT * FROM documents WHERE id = ?', (doc_id_b,)).fetchone()
+
+            if not doc_a or not doc_b:
+                return jsonify({'error': 'One or both documents not found'}), 404
+
+            chunks_a = conn.execute(
+                'SELECT content FROM document_chunks WHERE document_id = ? ORDER BY chunk_index',
+                (doc_id_a,)
+            ).fetchall()
+            chunks_b = conn.execute(
+                'SELECT content FROM document_chunks WHERE document_id = ? ORDER BY chunk_index',
+                (doc_id_b,)
+            ).fetchall()
+
+            text_a = ' '.join(c['content'] for c in chunks_a)
+            text_b = ' '.join(c['content'] for c in chunks_b)
+
+            words_a = set(re.findall(r'\w+', text_a.lower()))
+            words_b = set(re.findall(r'\w+', text_b.lower()))
+            common = words_a & words_b
+            total = words_a | words_b
+            similarity = round((len(common) / max(len(total), 1)) * 100, 1)
+
+            key_a = list(words_a - words_b)[:20]
+            key_b = list(words_b - words_a)[:20]
+
+            groq_key = get_groq_key()
+            comparison_result = None
+            if groq_key:
+                try:
+                    sys_prompt = (
+                        "You are comparing two documents. Provide a structured comparison with these sections:\n"
+                        "## Similarities\n## Key Differences\n## Changed Requirements\n## Missing Information\n"
+                        "## Contradictions\n\n"
+                        "DOCUMENT A (" + doc_a['name'] + "):\n" + text_a[:3000] + "\n\n"
+                        "DOCUMENT B (" + doc_b['name'] + "):\n" + text_b[:3000]
+                    )
+                    resp = http_requests.post(
+                        GROQ_API_URL,
+                        headers={
+                            'Content-Type': 'application/json',
+                            'Authorization': f'Bearer {groq_key}'
+                        },
+                        json={
+                            'model': GROQ_MODEL,
+                            'messages': [
+                                {'role': 'system', 'content': sys_prompt},
+                                {'role': 'user', 'content': 'Compare these two documents comprehensively.'}
+                            ],
+                            'temperature': 0.3,
+                            'max_tokens': 2048
+                        },
+                        timeout=30
+                    )
+                    resp.raise_for_status()
+                    comparison_result = resp.json()['choices'][0]['message']['content']
+                except Exception as e:
+                    logger.error("Comparison AI error: %s", e)
+
+            return jsonify({
+                'document_a': {'id': doc_a['id'], 'name': doc_a['name']},
+                'document_b': {'id': doc_b['id'], 'name': doc_b['name']},
+                'similarity': similarity,
+                'unique_to_a': key_a,
+                'unique_to_b': key_b,
+                'comparison': comparison_result
+            })
+    except Exception as e:
+        logger.error("Compare failed: %s", e)
+        return jsonify({'error': 'Comparison failed'}), 500
+
+# ─── Document Health Endpoint ─────────────────────────────
+@app.route('/api/documents/<int:doc_id>/health', methods=['GET'])
+def document_health(doc_id):
+    try:
+        with get_db() as conn:
+            doc = conn.execute('SELECT * FROM documents WHERE id = ?', (doc_id,)).fetchone()
+            if not doc:
+                return jsonify({'error': 'Document not found'}), 404
+
+            chunk_count = conn.execute(
+                'SELECT COUNT(*) as c FROM document_chunks WHERE document_id = ?', (doc_id,)
+            ).fetchone()['c']
+
+            page_info = conn.execute(
+                'SELECT MIN(page) as min_page, MAX(page) as max_page FROM document_chunks WHERE document_id = ?',
+                (doc_id,)
+            ).fetchone()
+
+            total_chars = conn.execute(
+                'SELECT COALESCE(SUM(LENGTH(content)), 0) as total FROM document_chunks WHERE document_id = ?',
+                (doc_id,)
+            ).fetchone()['total']
+
+            file_path = os.path.join(UPLOAD_FOLDER, doc['name'])
+            exists_on_disk = os.path.isfile(file_path)
+
+            ext = os.path.splitext(doc['name'])[1].lower()
+            content_type_map = {
+                '.pdf': 'PDF Document',
+                '.txt': 'Text File',
+                '.md': 'Markdown File',
+                '.csv': 'CSV Data',
+                '.json': 'JSON Data',
+                '.docx': 'Word Document',
+                '.doc': 'Word Document'
+            }
+
+            return jsonify({
+                'id': doc['id'],
+                'name': doc['name'],
+                'size': doc['size'],
+                'status': doc['status'],
+                'uploaded_at': doc['uploaded_at'],
+                'chunks': chunk_count,
+                'pages': page_info['max_page'] if page_info['max_page'] else 0,
+                'total_characters': total_chars,
+                'content_type': content_type_map.get(ext, 'Unknown'),
+                'indexed': doc['status'] == 'indexed',
+                'file_on_disk': exists_on_disk,
+                'retrievable': doc['status'] == 'indexed' and chunk_count > 0
+            })
+    except Exception as e:
+        logger.error("Document health failed: %s", e)
+        return jsonify({'error': 'Health check failed'}), 500
+
+# ─── Branch Conversation Endpoint ─────────────────────────
+@app.route('/api/conversations/<int:conv_id>/branch', methods=['POST'])
+def branch_conversation(conv_id):
+    data = request.get_json(silent=True) or {}
+    message_id = data.get('message_id')
+
+    if not message_id:
+        return jsonify({'error': 'message_id is required'}), 400
+
+    try:
+        with get_db() as conn:
+            conv = conn.execute('SELECT * FROM conversations WHERE id = ?', (conv_id,)).fetchone()
+            if not conv:
+                return jsonify({'error': 'Conversation not found'}), 404
+
+            msg = conn.execute(
+                'SELECT * FROM messages WHERE id = ? AND conversation_id = ?',
+                (message_id, conv_id)
+            ).fetchone()
+            if not msg:
+                return jsonify({'error': 'Message not found'}), 404
+
+            new_title = conv['title'] + ' (Branch)'
+            cur = conn.execute('INSERT INTO conversations (title) VALUES (?)', (new_title,))
+            new_conv_id = cur.lastrowid
+
+            messages_to_copy = conn.execute(
+                'SELECT * FROM messages WHERE conversation_id = ? AND id <= ? ORDER BY created_at ASC',
+                (conv_id, message_id)
+            ).fetchall()
+
+            for m in messages_to_copy:
+                conn.execute(
+                    'INSERT INTO messages (conversation_id, role, content, sources) VALUES (?, ?, ?, ?)',
+                    (new_conv_id, m['role'], m['content'], m['sources'])
+                )
+
+            conn.commit()
+
+            return jsonify({
+                'id': new_conv_id,
+                'title': new_title,
+                'message_count': len(messages_to_copy)
+            }), 201
+    except Exception as e:
+        logger.error("Branch failed: %s", e)
+        return jsonify({'error': 'Branching failed'}), 500
 
 # ─── Startup: index any unindexed documents ──────────────
 def index_existing_documents():

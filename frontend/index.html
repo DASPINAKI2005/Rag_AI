@@ -208,6 +208,123 @@
     .settings-key-row .settings-key-status { font-size: 11px; color: #6B7280; }
     .settings-key-row .settings-key-change { padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(139,92,246,0.2); background: rgba(139,92,246,0.06); color: #8B5CF6; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
     .settings-key-row .settings-key-change:hover { background: rgba(139,92,246,0.12); }
+
+    /* ── MODE SELECTOR ── */
+    .mode-bar { display: flex; gap: 4px; padding: 4px; background: rgba(139,92,246,0.04); border-radius: 12px; border: 1px solid rgba(139,92,246,0.08); margin-bottom: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .mode-bar::-webkit-scrollbar { display: none; }
+    .mode-btn { flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 8px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; color: #6B7280; background: transparent; white-space: nowrap; }
+    .mode-btn .material-symbols-outlined { font-size: 15px; }
+    .mode-btn:hover { background: rgba(139,92,246,0.08); color: #8B5CF6; }
+    .mode-btn.active { background: #8B5CF6; color: #fff; box-shadow: 0 2px 8px rgba(139,92,246,0.3); }
+
+    /* ── CONFIDENCE BADGE ── */
+    .confidence-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+    .confidence-strong { background: rgba(34,197,94,0.1); color: #16A34A; border: 1px solid rgba(34,197,94,0.2); }
+    .confidence-moderate { background: rgba(234,179,8,0.1); color: #CA8A04; border: 1px solid rgba(234,179,8,0.2); }
+    .confidence-limited { background: rgba(239,68,68,0.1); color: #EF4444; border: 1px solid rgba(239,68,68,0.2); }
+    .confidence-badge .material-symbols-outlined { font-size: 12px; }
+
+    /* ── SOURCE POPOVER ── */
+    .source-chip { position: relative; cursor: pointer; }
+    .source-popover { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); min-width: 280px; max-width: 360px; background: #fff; border: 1px solid rgba(139,92,246,0.15); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); padding: 14px; z-index: 35; display: none; animation: slideUp 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .source-popover.open { display: block; }
+    .source-popover h4 { font-size: 12px; font-weight: 700; color: #1E1B2E; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+    .source-popover .sp-meta { font-size: 10px; color: #6B7280; margin-bottom: 8px; display: flex; gap: 10px; }
+    .source-popover .sp-excerpt { font-size: 11px; color: #374151; line-height: 1.5; background: rgba(139,92,246,0.04); padding: 8px 10px; border-radius: 8px; border-left: 3px solid #8B5CF6; max-height: 100px; overflow-y: auto; }
+    .source-popover .sp-match { font-size: 10px; color: #16A34A; font-weight: 600; margin-top: 6px; }
+    .source-popover::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 12px; height: 12px; background: #fff; border-right: 1px solid rgba(139,92,246,0.15); border-bottom: 1px solid rgba(139,92,246,0.15); }
+
+    /* ── FOLLOW-UP SUGGESTIONS ── */
+    .followup-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(139,92,246,0.08); }
+    .followup-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(139,92,246,0.15); background: rgba(139,92,246,0.04); font-size: 10px; font-weight: 600; color: #6B7280; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .followup-chip:hover { border-color: #8B5CF6; color: #8B5CF6; background: rgba(139,92,246,0.08); transform: translateY(-1px); }
+    .followup-chip .material-symbols-outlined { font-size: 13px; }
+
+    /* ── RESPONSE CONTROLS ── */
+    .response-controls { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+    .resp-ctrl-btn { padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(139,92,246,0.12); background: transparent; font-size: 10px; font-weight: 600; color: #6B7280; cursor: pointer; transition: all 0.15s; }
+    .resp-ctrl-btn:hover { border-color: #8B5CF6; color: #8B5CF6; background: rgba(139,92,246,0.05); }
+    .resp-ctrl-btn.active { background: #8B5CF6; color: #fff; border-color: #8B5CF6; }
+
+    /* ── ASK THIS SECTION ── */
+    .ask-section-btn { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(139,92,246,0.15); background: rgba(139,92,246,0.04); font-size: 10px; font-weight: 600; color: #8B5CF6; cursor: pointer; transition: all 0.15s; margin-top: 6px; }
+    .ask-section-btn:hover { background: rgba(139,92,246,0.12); }
+    .ask-section-btn .material-symbols-outlined { font-size: 13px; }
+
+    /* ── BRANCH INDICATOR ── */
+    .branch-indicator { display: flex; align-items: center; gap: 4px; padding: 4px 10px; background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2); border-radius: 8px; font-size: 10px; font-weight: 600; color: #CA8A04; margin-bottom: 8px; }
+    .branch-indicator .material-symbols-outlined { font-size: 14px; }
+
+    /* ── COMPARE MODAL ── */
+    .compare-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .compare-overlay.hidden { display: none; }
+    .compare-modal { background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.25); width: 92%; max-width: 640px; max-height: 85vh; overflow-y: auto; padding: 28px; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .compare-modal h2 { font-size: 18px; font-weight: 800; color: #1E1B2E; margin-bottom: 16px; }
+    .compare-select-row { display: flex; gap: 12px; margin-bottom: 16px; }
+    .compare-select-row select { flex: 1; padding: 10px 12px; border: 1px solid rgba(139,92,246,0.2); border-radius: 10px; font-size: 12px; outline: none; background: rgba(139,92,246,0.03); color: #1E1B2E; }
+    .compare-select-row select:focus { border-color: #8B5CF6; }
+    .compare-result { margin-top: 16px; }
+    .compare-result .sim-bar { height: 6px; background: rgba(139,92,246,0.1); border-radius: 99px; overflow: hidden; margin: 8px 0; }
+    .compare-result .sim-fill { height: 100%; background: linear-gradient(90deg, #8B5CF6, #EC4899); border-radius: 99px; transition: width 0.5s ease; }
+    .compare-result .sim-label { font-size: 12px; font-weight: 700; color: #1E1B2E; }
+    .compare-result .compare-section { margin-top: 14px; }
+    .compare-result .compare-section h3 { font-size: 13px; font-weight: 700; color: #8B5CF6; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+    .compare-result .compare-section h3 .material-symbols-outlined { font-size: 16px; }
+    .compare-btn { padding: 10px 20px; border-radius: 12px; border: none; background: linear-gradient(135deg, #8B5CF6, #EC4899); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .compare-btn:hover { opacity: 0.9; }
+    .compare-close { position: absolute; top: 14px; right: 14px; background: rgba(139,92,246,0.08); border: none; border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6B7280; }
+    .compare-close:hover { background: rgba(139,92,246,0.15); color: #1E1B2E; }
+    .compare-modal { position: relative; }
+
+    /* ── DOCUMENT HEALTH PANEL ── */
+    .health-panel { margin-top: 10px; padding: 12px; background: rgba(139,92,246,0.03); border: 1px solid rgba(139,92,246,0.1); border-radius: 12px; }
+    .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .health-item { display: flex; flex-direction: column; gap: 2px; }
+    .health-item .hl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; }
+    .health-item .hv { font-size: 12px; font-weight: 600; color: #1E1B2E; }
+    .health-item .hv.good { color: #16A34A; }
+    .health-item .hv.warn { color: #CA8A04; }
+    .health-item .hv.bad { color: #EF4444; }
+
+    /* ── QUICK ACTIONS ── */
+    .quick-actions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+    .quick-action-btn { display: inline-flex; align-items: center; gap: 3px; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(139,92,246,0.12); background: transparent; font-size: 10px; font-weight: 600; color: #6B7280; cursor: pointer; transition: all 0.15s; }
+    .quick-action-btn:hover { border-color: #8B5CF6; color: #8B5CF6; background: rgba(139,92,246,0.05); }
+    .quick-action-btn .material-symbols-outlined { font-size: 12px; }
+
+    /* ── PROMPT LIBRARY MODAL ── */
+    .promptlib-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .promptlib-overlay.hidden { display: none; }
+    .promptlib-modal { background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.25); width: 92%; max-width: 500px; max-height: 80vh; overflow-y: auto; padding: 28px; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) forwards; position: relative; }
+    .promptlib-modal h2 { font-size: 18px; font-weight: 800; color: #1E1B2E; margin-bottom: 4px; }
+    .promptlib-modal p.sub { font-size: 11px; color: #6B7280; margin-bottom: 14px; }
+    .promptlib-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid rgba(139,92,246,0.1); border-radius: 10px; margin-bottom: 6px; transition: background 0.15s; }
+    .promptlib-item:hover { background: rgba(139,92,246,0.04); }
+    .promptlib-item .pi-text { font-size: 12px; color: #1E1B2E; flex: 1; margin-right: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .promptlib-item .pi-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .promptlib-item .pi-btn { width: 28px; height: 28px; border-radius: 8px; border: none; background: rgba(139,92,246,0.06); color: #6B7280; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .promptlib-item .pi-btn:hover { background: rgba(139,92,246,0.15); color: #8B5CF6; }
+    .promptlib-item .pi-btn.del:hover { background: rgba(239,68,68,0.1); color: #EF4444; }
+    .promptlib-item .pi-btn .material-symbols-outlined { font-size: 16px; }
+    .promptlib-save-row { display: flex; gap: 8px; margin-top: 12px; }
+    .promptlib-save-row input { flex: 1; padding: 10px 12px; border: 1px solid rgba(139,92,246,0.2); border-radius: 10px; font-size: 12px; outline: none; }
+    .promptlib-save-row input:focus { border-color: #8B5CF6; }
+    .promptlib-empty { text-align: center; padding: 20px; font-size: 12px; color: #9CA3AF; }
+
+    /* ── EXPORT/IMPORT MODAL ── */
+    .export-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .export-overlay.hidden { display: none; }
+    .export-modal { background: #fff; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.25); width: 92%; max-width: 440px; padding: 28px; animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) forwards; position: relative; }
+    .export-modal h2 { font-size: 18px; font-weight: 800; color: #1E1B2E; margin-bottom: 14px; }
+    .export-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid rgba(139,92,246,0.12); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+    .export-opt:hover { border-color: #8B5CF6; background: rgba(139,92,246,0.04); }
+    .export-opt .material-symbols-outlined { font-size: 20px; color: #8B5CF6; }
+    .export-opt .eo-label { font-size: 12px; font-weight: 700; color: #1E1B2E; }
+    .export-opt .eo-desc { font-size: 10px; color: #6B7280; }
+    .import-drop { border: 2px dashed rgba(139,92,246,0.25); border-radius: 14px; padding: 24px; text-align: center; margin-top: 12px; cursor: pointer; transition: all 0.15s; }
+    .import-drop:hover { border-color: #8B5CF6; background: rgba(139,92,246,0.03); }
+    .import-drop .material-symbols-outlined { font-size: 28px; color: #8B5CF6; margin-bottom: 6px; }
+    .import-drop p { font-size: 11px; color: #6B7280; }
   </style>
 </head>
 
@@ -308,6 +425,15 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
+        <button id="btnPromptLib" title="Prompt Library" class="p-1.5 text-apple-subtle hover:text-apple-primary rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[20px]">psychology</span>
+        </button>
+        <button id="btnCompare" title="Compare Documents" class="p-1.5 text-apple-subtle hover:text-apple-primary rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[20px]">compare_arrows</span>
+        </button>
+        <button id="btnExport" title="Export / Import" class="p-1.5 text-apple-subtle hover:text-apple-primary rounded-lg transition-colors">
+          <span class="material-symbols-outlined text-[20px]">import_export</span>
+        </button>
         <button id="btnClearChat" title="Clear Messages" class="p-1.5 text-apple-subtle hover:text-rose-600 rounded-lg transition-colors">
           <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
         </button>
@@ -352,7 +478,16 @@
       </div>
 
       <div class="absolute bottom-4 left-0 right-0 px-4 flex justify-center z-20 pointer-events-none">
-        <div class="w-full max-w-2xl apple-glass rounded-2xl p-2 shadow-2xl border border-white/60 pointer-events-auto flex items-center gap-2">
+        <div class="w-full max-w-2xl pointer-events-auto space-y-2">
+          <div class="mode-bar" id="modeBar">
+            <button class="mode-btn active" data-mode="ask"><span class="material-symbols-outlined">help</span>Ask</button>
+            <button class="mode-btn" data-mode="summarize"><span class="material-symbols-outlined">summarize</span>Summarize</button>
+            <button class="mode-btn" data-mode="compare"><span class="material-symbols-outlined">compare_arrows</span>Compare</button>
+            <button class="mode-btn" data-mode="extract"><span class="material-symbols-outlined">inventory_2</span>Extract</button>
+            <button class="mode-btn" data-mode="explain"><span class="material-symbols-outlined">school</span>Explain</button>
+            <button class="mode-btn" data-mode="quiz"><span class="material-symbols-outlined">quiz</span>Quiz Me</button>
+          </div>
+          <div class="apple-glass rounded-2xl p-2 shadow-2xl border border-white/60 flex items-center gap-2">
           <label for="fileUploadInput" class="p-2 text-apple-subtle hover:text-apple-primary hover:bg-black/5 rounded-xl cursor-pointer transition-colors" title="Attach Document">
             <span class="material-symbols-outlined text-[20px]">attach_file</span>
           </label>
@@ -397,6 +532,7 @@
               <span class="material-symbols-outlined">close</span> Cancel
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -507,6 +643,72 @@
     </div>
   </div>
 
+  <!-- ================= COMPARE MODAL ================= -->
+  <div id="compareModal" class="compare-overlay hidden">
+    <div class="compare-modal">
+      <button id="compareCloseBtn" class="compare-close" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h2>Document Compare</h2>
+      <p style="font-size:11px;color:#6B7280;margin-bottom:12px">Select two documents to compare for similarities, differences, and contradictions.</p>
+      <div class="compare-select-row">
+        <select id="compareDocA"><option value="">Select Document A...</option></select>
+        <select id="compareDocB"><option value="">Select Document B...</option></select>
+      </div>
+      <button id="compareRunBtn" class="compare-btn">Compare Documents</button>
+      <div id="compareResult" class="compare-result" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ================= PROMPT LIBRARY MODAL ================= -->
+  <div id="promptLibModal" class="promptlib-overlay hidden">
+    <div class="promptlib-modal">
+      <button id="promptLibCloseBtn" class="compare-close" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h2>Prompt Library</h2>
+      <p class="sub">Save and reuse frequently used prompts.</p>
+      <div id="promptLibList"></div>
+      <div class="promptlib-save-row">
+        <input type="text" id="promptLibInput" placeholder="Type a prompt to save..." />
+        <button id="promptLibSaveBtn" class="compare-btn" style="padding:8px 16px;font-size:12px">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= EXPORT/IMPORT MODAL ================= -->
+  <div id="exportModal" class="export-overlay hidden">
+    <div class="export-modal">
+      <button id="exportCloseBtn" class="compare-close" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h2>Export / Import Conversations</h2>
+      <div id="exportOpts" style="margin-top:8px">
+        <div class="export-opt" data-format="markdown">
+          <span class="material-symbols-outlined">description</span>
+          <div><div class="eo-label">Export as Markdown</div><div class="eo-desc">Formatted .md file</div></div>
+        </div>
+        <div class="export-opt" data-format="txt">
+          <span class="material-symbols-outlined">article</span>
+          <div><div class="eo-label">Export as Text</div><div class="eo-desc">Plain text .txt file</div></div>
+        </div>
+        <div class="export-opt" data-format="json">
+          <span class="material-symbols-outlined">data_object</span>
+          <div><div class="eo-label">Export as JSON</div><div class="eo-desc">Structured data file</div></div>
+        </div>
+        <div class="export-opt" data-format="print">
+          <span class="material-symbols-outlined">print</span>
+          <div><div class="eo-label">Print / PDF</div><div class="eo-desc">Open print-friendly view</div></div>
+        </div>
+      </div>
+      <div class="import-drop" id="importDropZone">
+        <span class="material-symbols-outlined">upload_file</span>
+        <p>Drop a JSON file here or click to import a conversation</p>
+        <input type="file" id="importFileInput" accept=".json" class="hidden" />
+      </div>
+    </div>
+  </div>
+
   <script>
     // ── STATE ────────────────────────────────────────────────
     let currentConversationId = null;
@@ -532,6 +734,10 @@
     const fileSelectLabel = $('fileSelectLabel');
     const fileSelectDropdown = $('fileSelectDropdown');
     const fileSelectWrap = $('fileSelectWrap');
+
+    let currentStyle = null;
+    let pendingSectionContext = null;
+    let selectedBranchMessageId = null;
 
     // ── INITIALIZATION ───────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
@@ -716,6 +922,78 @@
       if (changeKeyBtn) {
         changeKeyBtn.addEventListener('click', () => showApiKeyModal(false));
       }
+
+      // ── MODE SELECTOR ──
+      $('modeBar').addEventListener('click', (e) => {
+        const btn = e.target.closest('.mode-btn');
+        if (!btn) return;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+
+      // ── FOLLOW-UP SUGGESTIONS (delegated) ──
+      messagesContainer.addEventListener('click', (e) => {
+        const fu = e.target.closest('.followup-chip');
+        if (fu) {
+          const fuType = fu.getAttribute('data-fu');
+          handleFollowup(fuType);
+          return;
+        }
+        const rc = e.target.closest('.resp-ctrl-btn');
+        if (rc) {
+          handleResponseControl(rc);
+          return;
+        }
+        const sc = e.target.closest('.source-chip');
+        if (sc) {
+          toggleSourcePopover(sc);
+          return;
+        }
+      });
+
+      // ── SOURCE POPOVER close on outside click ──
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.source-chip')) {
+          document.querySelectorAll('.source-popover.open').forEach(p => p.classList.remove('open'));
+        }
+      });
+
+      // ── HEADER BUTTONS ──
+      $('btnCompare').addEventListener('click', openCompareModal);
+      $('btnExport').addEventListener('click', openExportModal);
+      $('btnPromptLib').addEventListener('click', openPromptLibModal);
+
+      // ── COMPARE MODAL ──
+      $('compareCloseBtn').addEventListener('click', () => $('compareModal').classList.add('hidden'));
+      $('compareModal').addEventListener('click', (e) => { if (e.target === $('compareModal')) $('compareModal').classList.add('hidden'); });
+      $('compareRunBtn').addEventListener('click', runComparison);
+
+      // ── PROMPT LIBRARY MODAL ──
+      $('promptLibCloseBtn').addEventListener('click', () => $('promptLibModal').classList.add('hidden'));
+      $('promptLibModal').addEventListener('click', (e) => { if (e.target === $('promptLibModal')) $('promptLibModal').classList.add('hidden'); });
+      $('promptLibSaveBtn').addEventListener('click', savePromptToLibrary);
+      $('promptLibInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') savePromptToLibrary(); });
+
+      // ── EXPORT/IMPORT MODAL ──
+      $('exportCloseBtn').addEventListener('click', () => $('exportModal').classList.add('hidden'));
+      $('exportModal').addEventListener('click', (e) => { if (e.target === $('exportModal')) $('exportModal').classList.add('hidden'); });
+      $('exportOpts').addEventListener('click', (e) => {
+        const opt = e.target.closest('.export-opt');
+        if (opt) handleExport(opt.getAttribute('data-format'));
+      });
+      $('importDropZone').addEventListener('click', () => $('importFileInput').click());
+      $('importFileInput').addEventListener('change', handleImportFile);
+      $('importDropZone').addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
+      $('importDropZone').addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const file = e.dataTransfer.files[0];
+        if (file) importConversationFile(file);
+      });
+
+      // ── SMART DRAFT RECOVERY ──
+      loadDraft();
+      chatInput.addEventListener('input', saveDraft);
     }
 
     // ── FILE SELECTOR ────────────────────────────────────────
@@ -912,7 +1190,7 @@
       messagesContainer.innerHTML = messages.map(m => {
         if (m.role === 'user') {
           return `
-            <div class="msg-row flex justify-end anim-fade-in" data-role="user" data-content="${escapeHtml(m.content)}">
+            <div class="msg-row flex justify-end anim-fade-in" data-role="user" data-content="${escapeHtml(m.content)}" data-msg-id="${m.id || ''}">
               <div class="max-w-[85%] md:max-w-[75%]">
                 <div class="gradient-orb text-white px-4 py-2.5 rounded-2xl rounded-tr-sm text-xs md:text-sm shadow-md msg-text whitespace-pre-wrap">${escapeHtml(m.content)}</div>
                 <div class="msg-actions justify-end">
@@ -928,20 +1206,32 @@
           `;
         } else {
           const sources = m.sources || [];
-          const sourceChips = sources.map(s => `
-            <span class="inline-flex items-center gap-1 bg-purple-500/10 text-purple-700 text-[11px] font-medium px-2 py-0.5 rounded-md border border-purple-500/20">
+          const avgMatch = sources.length ? Math.round(sources.reduce((s, x) => s + (x.match || 0), 0) / sources.length) : 0;
+          const confidenceLevel = avgMatch >= 70 ? 'strong' : avgMatch >= 40 ? 'moderate' : 'limited';
+          const confidenceLabel = avgMatch >= 70 ? 'Strong Evidence' : avgMatch >= 40 ? 'Moderate Evidence' : 'Limited Evidence';
+          const confidenceIcon = avgMatch >= 70 ? 'verified' : avgMatch >= 40 ? 'info' : 'warning';
+
+          const sourceChips = sources.map((s, idx) => `
+            <span class="source-chip inline-flex items-center gap-1 bg-purple-500/10 text-purple-700 text-[11px] font-medium px-2 py-0.5 rounded-md border border-purple-500/20" data-source-idx="${idx}" data-source-name="${escapeHtml(s.name)}" data-source-page="${s.page}" data-source-match="${s.match}" data-source-excerpt="${escapeHtml(s.excerpt || '')}">
               <span class="material-symbols-outlined text-[12px]">description</span>
               ${escapeHtml(s.name)} (p.${escapeHtml(String(s.page))})
+              <span class="source-popover" id="sp-${m.id}-${idx}">
+                <h4><span class="material-symbols-outlined" style="font-size:14px;color:#8B5CF6">description</span>${escapeHtml(s.name)}</h4>
+                <div class="sp-meta"><span>Page ${s.page}</span><span>Match: ${s.match}%</span></div>
+                ${s.excerpt ? `<div class="sp-excerpt">${escapeHtml(s.excerpt)}</div>` : '<div class="sp-excerpt" style="color:#9CA3AF;font-style:italic">No excerpt available</div>'}
+                <div class="sp-match">Relevance: ${s.match}% — ${s.match >= 70 ? 'Strong match' : s.match >= 40 ? 'Moderate match' : 'Weak match'}</div>
+              </span>
             </span>
           `).join('');
 
           return `
-            <div class="msg-row flex justify-start anim-fade-in" data-role="assistant" data-content="${escapeHtml(m.content)}">
+            <div class="msg-row flex justify-start anim-fade-in" data-role="assistant" data-content="${escapeHtml(m.content)}" data-msg-id="${m.id || ''}">
               <div class="max-w-[90%] md:max-w-[85%]">
                 <div class="apple-glass p-4 rounded-2xl rounded-tl-sm border border-apple-border shadow-sm space-y-3">
                   <div class="flex items-center gap-2 pb-2 border-b border-apple-border/50">
                     <span class="material-symbols-outlined text-purple-600 text-[18px]">auto_awesome</span>
                     <span class="text-xs font-bold text-apple-dark">Aura Response</span>
+                    ${sources.length ? `<span class="confidence-badge confidence-${confidenceLevel}"><span class="material-symbols-outlined">${confidenceIcon}</span>${confidenceLabel}</span>` : ''}
                   </div>
                   <div class="prose-content text-xs md:text-sm text-apple-dark leading-relaxed msg-text">${formatContent(m.content)}</div>
                   ${sources.length ? `
@@ -950,8 +1240,28 @@
                       <div class="flex flex-wrap gap-1.5">${sourceChips}</div>
                     </div>
                   ` : ''}
+                  <div class="followup-bar">
+                    <button class="followup-chip" data-fu="explain"><span class="material-symbols-outlined">school</span>Explain further</button>
+                    <button class="followup-chip" data-fu="evidence"><span class="material-symbols-outlined">fact_check</span>Show evidence</button>
+                    <button class="followup-chip" data-fu="compare"><span class="material-symbols-outlined">compare_arrows</span>Compare sources</button>
+                    <button class="followup-chip" data-fu="summarize"><span class="material-symbols-outlined">summarize</span>Summarize</button>
+                    <button class="followup-chip" data-fu="deeper"><span class="material-symbols-outlined">expand_more</span>Deeper question</button>
+                  </div>
+                  <div class="response-controls">
+                    <button class="resp-ctrl-btn" data-style="shorter">Shorter</button>
+                    <button class="resp-ctrl-btn" data-style="detailed">Detailed</button>
+                    <button class="resp-ctrl-btn" data-style="simplify">Simplify</button>
+                    <button class="resp-ctrl-btn" data-style="professional">Professional</button>
+                    <button class="resp-ctrl-btn" data-style="technical">Technical</button>
+                  </div>
                 </div>
                 <div class="msg-actions">
+                  <button class="msg-action-btn" data-action="ask-section" title="Ask about this section">
+                    <span class="material-symbols-outlined">question_answer</span>
+                  </button>
+                  <button class="msg-action-btn" data-action="branch" title="Branch from here">
+                    <span class="material-symbols-outlined">account_tree</span>
+                  </button>
                   <button class="msg-action-btn" data-action="copy" title="Copy response">
                     <span class="material-symbols-outlined">content_copy</span>
                   </button>
@@ -974,7 +1284,12 @@
 
       chatInput.value = '';
       chatInput.style.height = 'auto';
+      clearDraft();
       isProcessing = true;
+
+      const activeMode = document.querySelector('.mode-btn.active');
+      const currentMode = activeMode ? activeMode.getAttribute('data-mode') : 'ask';
+      const effectiveMode = currentMode === 'ask' ? null : currentMode;
 
       welcomeScreen.classList.add('hidden');
 
@@ -1010,6 +1325,12 @@
       try {
         const payload = { message: text, conversation_id: currentConversationId };
         if (selectedDocumentId) payload.document_id = selectedDocumentId;
+        if (effectiveMode) payload.mode = effectiveMode;
+        if (currentStyle) payload.style = currentStyle;
+        if (pendingSectionContext) {
+          payload.section_context = pendingSectionContext;
+          pendingSectionContext = null;
+        }
         const res = await apiRequest('/api/chat', 'POST', payload);
         currentConversationId = res.conversation_id;
         
@@ -1058,6 +1379,7 @@
 
       const role = msgRow.getAttribute('data-role');
       const rawContent = msgRow.getAttribute('data-content');
+      const msgId = msgRow.getAttribute('data-msg-id');
 
       if (action === 'copy') {
         copyToClipboard(rawContent);
@@ -1065,6 +1387,10 @@
         shareContent(rawContent);
       } else if (action === 'edit' && role === 'user') {
         startEditMessage(msgRow, rawContent);
+      } else if (action === 'ask-section') {
+        startAskSection(rawContent, msgRow);
+      } else if (action === 'branch' && role === 'assistant') {
+        branchFromMessage(msgId);
       }
     }
 
@@ -1227,21 +1553,33 @@
       `).join('');
 
       knowledgeGrid.innerHTML = docs.map(d => `
-        <div class="apple-glass p-4 rounded-2xl border border-apple-border flex items-center justify-between shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
-              <span class="material-symbols-outlined">description</span>
+        <div class="apple-glass p-4 rounded-2xl border border-apple-border flex flex-col shadow-sm" data-doc-card="${d.id}">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
+                <span class="material-symbols-outlined">description</span>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-apple-dark">${escapeHtml(d.name)}</h4>
+                <p class="text-[10px] text-apple-subtle">${formatFileSize(d.size)} • ${d.status === 'indexed' ? 'Indexed' : d.status}</p>
+              </div>
             </div>
-            <div>
-              <h4 class="text-xs font-bold text-apple-dark">${escapeHtml(d.name)}</h4>
-              <p class="text-[10px] text-apple-subtle">${formatFileSize(d.size)} • Vectorized</p>
-            </div>
+            <button class="doc-delete p-2 text-apple-subtle hover:text-rose-500 rounded-lg hover:bg-black/5" data-id="${d.id}">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
           </div>
-          <button class="doc-delete p-2 text-apple-subtle hover:text-rose-500 rounded-lg hover:bg-black/5" data-id="${d.id}">
-            <span class="material-symbols-outlined text-[18px]">delete</span>
-          </button>
+          <div class="quick-actions">
+            <button class="quick-action-btn" data-qa="summarize" data-doc-id="${d.id}" data-doc-name="${escapeHtml(d.name)}"><span class="material-symbols-outlined">summarize</span>Summarize</button>
+            <button class="quick-action-btn" data-qa="explain" data-doc-id="${d.id}" data-doc-name="${escapeHtml(d.name)}"><span class="material-symbols-outlined">school</span>Explain</button>
+            <button class="quick-action-btn" data-qa="keypoints" data-doc-id="${d.id}" data-doc-name="${escapeHtml(d.name)}"><span class="material-symbols-outlined">key</span>Key Points</button>
+            <button class="quick-action-btn" data-qa="questions" data-doc-id="${d.id}" data-doc-name="${escapeHtml(d.name)}"><span class="material-symbols-outlined">quiz</span>Questions</button>
+            <button class="quick-action-btn" data-qa="extract" data-doc-id="${d.id}" data-doc-name="${escapeHtml(d.name)}"><span class="material-symbols-outlined">inventory_2</span>Extract</button>
+          </div>
+          <div class="health-grid" id="health-${d.id}"></div>
         </div>
       `).join('');
+
+      docs.forEach(d => loadDocHealth(d.id));
     }
 
     function handleDocListClick(e) {
@@ -1257,7 +1595,47 @@
       if (btn) {
         const id = parseInt(btn.getAttribute('data-id'), 10);
         deleteDoc(id);
+        return;
       }
+      const qa = e.target.closest('.quick-action-btn');
+      if (qa) {
+        const docId = parseInt(qa.getAttribute('data-doc-id'), 10);
+        const qaType = qa.getAttribute('data-qa');
+        const docName = qa.getAttribute('data-doc-name');
+        executeQuickAction(docId, qaType, docName);
+      }
+    }
+
+    async function loadDocHealth(docId) {
+      try {
+        const h = await apiRequest(`/api/documents/${docId}/health`);
+        const el = $(`health-${docId}`);
+        if (!el) return;
+        el.innerHTML = `
+          <div class="health-item"><span class="hl">Status</span><span class="hv ${h.indexed ? 'good' : 'bad'}">${h.indexed ? 'Indexed' : 'Not Indexed'}</span></div>
+          <div class="health-item"><span class="hl">Chunks</span><span class="hv">${h.chunks}</span></div>
+          <div class="health-item"><span class="hl">Pages</span><span class="hv">${h.pages}</span></div>
+          <div class="health-item"><span class="hl">Type</span><span class="hv">${h.content_type}</span></div>
+          <div class="health-item"><span class="hl">Size</span><span class="hv">${formatFileSize(h.size)}</span></div>
+          <div class="health-item"><span class="hl">Retrievable</span><span class="hv ${h.retrievable ? 'good' : 'warn'}">${h.retrievable ? 'Yes' : 'No'}</span></div>
+        `;
+      } catch (e) { /* silent */ }
+    }
+
+    function executeQuickAction(docId, qaType, docName) {
+      const prompts = {
+        summarize: `Summarize the key content of "${docName}"`,
+        explain: `Explain the main concepts in "${docName}" in simple terms`,
+        keypoints: `Extract the key points and important findings from "${docName}"`,
+        questions: `Generate study questions based on the content of "${docName}"`,
+        extract: `Extract all important data, figures, and specifications from "${docName}"`
+      };
+      const prompt = prompts[qaType] || prompts.summarize;
+      switchTab('chat');
+      selectedDocumentId = docId;
+      fileSelectLabel.textContent = docName;
+      chatInput.value = prompt;
+      sendMessage();
     }
 
     function formatFileSize(bytes) {
@@ -1605,6 +1983,313 @@
         }
         voiceTranscript.innerHTML = html;
       }
+    }
+
+    // ── FOLLOW-UP SUGGESTIONS ──
+    function handleFollowup(fuType) {
+      const prompts = {
+        explain: 'Can you explain this in more detail?',
+        evidence: 'Show me the specific evidence and citations for this answer',
+        compare: 'Compare the different sources cited in this response',
+        summarize: 'Summarize the key points from this response',
+        deeper: 'I have a follow-up question about this topic'
+      };
+      chatInput.value = prompts[fuType] || prompts.explain;
+      chatInput.focus();
+      autoResizeInput();
+    }
+
+    // ── RESPONSE CONTROLS ──
+    function handleResponseControl(btn) {
+      const style = btn.getAttribute('data-style');
+      document.querySelectorAll('.resp-ctrl-btn').forEach(b => b.classList.remove('active'));
+      if (currentStyle === style) {
+        currentStyle = null;
+        showToast('Response style reset', 'info');
+      } else {
+        btn.classList.add('active');
+        currentStyle = style;
+        showToast('Style: ' + style, 'tune');
+      }
+    }
+
+    // ── SOURCE POPOVER ──
+    function toggleSourcePopover(chip) {
+      const popover = chip.querySelector('.source-popover');
+      if (!popover) return;
+      const wasOpen = popover.classList.contains('open');
+      document.querySelectorAll('.source-popover.open').forEach(p => p.classList.remove('open'));
+      if (!wasOpen) popover.classList.add('open');
+    }
+
+    // ── ASK THIS SECTION ──
+    function startAskSection(content, msgRow) {
+      const selectedText = window.getSelection().toString().trim();
+      const contextText = selectedText || content.substring(0, 300);
+      pendingSectionContext = contextText;
+      chatInput.value = 'About this section: ';
+      chatInput.focus();
+      autoResizeInput();
+      showToast('Ask about this section — type your question', 'question_answer');
+    }
+
+    // ── CHAT BRANCHING ──
+    async function branchFromMessage(msgId) {
+      if (!currentConversationId || !msgId) return;
+      try {
+        const res = await apiRequest(`/api/conversations/${currentConversationId}/branch`, 'POST', {
+          message_id: parseInt(msgId, 10)
+        });
+        showToast('Branch created: ' + res.title, 'account_tree');
+        currentConversationId = res.id;
+        loadConversations();
+        const messages = await apiRequest(`/api/conversations/${res.id}/messages`);
+        renderMessages(messages);
+        $('headerTitle').textContent = res.title;
+      } catch (e) {
+        showToast('Failed to create branch', 'error');
+      }
+    }
+
+    // ── COMPARE DOCUMENTS ──
+    function openCompareModal() {
+      $('compareModal').classList.remove('hidden');
+      $('compareResult').style.display = 'none';
+      const selA = $('compareDocA');
+      const selB = $('compareDocB');
+      selA.innerHTML = '<option value="">Select Document A...</option>';
+      selB.innerHTML = '<option value="">Select Document B...</option>';
+      documentsList.forEach(d => {
+        selA.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)}</option>`;
+        selB.innerHTML += `<option value="${d.id}">${escapeHtml(d.name)}</option>`;
+      });
+    }
+
+    async function runComparison() {
+      const docA = $('compareDocA').value;
+      const docB = $('compareDocB').value;
+      if (!docA || !docB) {
+        showToast('Please select two documents', 'warning');
+        return;
+      }
+      if (docA === docB) {
+        showToast('Please select two different documents', 'warning');
+        return;
+      }
+      $('compareRunBtn').textContent = 'Comparing...';
+      $('compareRunBtn').disabled = true;
+      try {
+        const res = await apiRequest('/api/compare', 'POST', { document_a: parseInt(docA), document_b: parseInt(docB) });
+        const resultEl = $('compareResult');
+        resultEl.style.display = 'block';
+        let html = `
+          <div class="sim-label">Similarity: ${res.similarity}%</div>
+          <div class="sim-bar"><div class="sim-fill" style="width:${res.similarity}%"></div></div>
+        `;
+        if (res.comparison) {
+          html += `<div class="prose-content text-xs" style="margin-top:12px">${formatContent(res.comparison)}</div>`;
+        } else {
+          if (res.unique_to_a.length) {
+            html += `<div class="compare-section"><h3><span class="material-symbols-outlined">arrow_left</span>Unique to ${escapeHtml(res.document_a.name)}</h3><p class="text-xs text-apple-dark">${res.unique_to_a.join(', ')}</p></div>`;
+          }
+          if (res.unique_to_b.length) {
+            html += `<div class="compare-section"><h3><span class="material-symbols-outlined">arrow_right</span>Unique to ${escapeHtml(res.document_b.name)}</h3><p class="text-xs text-apple-dark">${res.unique_to_b.join(', ')}</p></div>`;
+          }
+        }
+        resultEl.innerHTML = html;
+      } catch (e) {
+        showToast('Comparison failed', 'error');
+      } finally {
+        $('compareRunBtn').textContent = 'Compare Documents';
+        $('compareRunBtn').disabled = false;
+      }
+    }
+
+    // ── EXPORT / IMPORT ──
+    function openExportModal() {
+      $('exportModal').classList.remove('hidden');
+    }
+
+    async function handleExport(format) {
+      if (!currentConversationId) {
+        showToast('No active conversation to export', 'warning');
+        return;
+      }
+      try {
+        const messages = await apiRequest(`/api/conversations/${currentConversationId}/messages`);
+        const title = $('headerTitle').textContent || 'Conversation';
+
+        if (format === 'json') {
+          downloadFile(JSON.stringify({ title, messages, exported_at: new Date().toISOString() }, null, 2), `${title}.json`, 'application/json');
+        } else if (format === 'markdown') {
+          let md = `# ${title}\n\n`;
+          messages.forEach(m => {
+            md += `**${m.role === 'user' ? 'You' : 'Aura'}**:\n${m.content}\n\n`;
+            if (m.sources && m.sources.length) {
+              md += `*Sources: ${m.sources.map(s => `${s.name} p.${s.page}`).join(', ')}*\n\n`;
+            }
+          });
+          downloadFile(md, `${title}.md`, 'text/markdown');
+        } else if (format === 'txt') {
+          let txt = `${title}\n${'='.repeat(title.length)}\n\n`;
+          messages.forEach(m => {
+            txt += `[${m.role === 'user' ? 'You' : 'Aura'}]\n${m.content}\n\n`;
+          });
+          downloadFile(txt, `${title}.txt`, 'text/plain');
+        } else if (format === 'print') {
+          let html = `<html><head><title>${escapeHtml(title)}</title><style>body{font-family:sans-serif;max-width:700px;margin:40px auto;padding:20px;line-height:1.6}h1{color:#1E1B2E}u{color:#8B5CF6}.meta{color:#6B7280;font-size:12px}</style></head><body>`;
+          html += `<h1>${escapeHtml(title)}</h1><p class="meta">Exported ${new Date().toLocaleDateString()}</p><hr>`;
+          messages.forEach(m => {
+            html += `<p><strong>${m.role === 'user' ? 'You' : 'Aura AI'}:</strong></p><p>${escapeHtml(m.content).replace(/\n/g, '<br>')}</p>`;
+            if (m.sources && m.sources.length) {
+              html += `<p class="meta"><em>Sources: ${m.sources.map(s => `${s.name} p.${s.page}`).join(', ')}</em></p>`;
+            }
+            html += '<hr>';
+          });
+          html += '</body></html>';
+          const w = window.open('', '_blank');
+          w.document.write(html);
+          w.document.close();
+          setTimeout(() => w.print(), 500);
+        }
+        $('exportModal').classList.add('hidden');
+        showToast('Exported successfully', 'download_done');
+      } catch (e) {
+        showToast('Export failed', 'error');
+      }
+    }
+
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function handleImportFile(e) {
+      const file = e.target.files[0];
+      if (file) importConversationFile(file);
+      e.target.value = '';
+    }
+
+    async function importConversationFile(file) {
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!data.messages || !Array.isArray(data.messages)) {
+          showToast('Invalid conversation file', 'error');
+          return;
+        }
+        const title = data.title || file.name.replace('.json', '');
+        const convRes = await apiRequest('/api/conversations', 'POST', { title });
+        const convId = convRes.id;
+        for (const m of data.messages) {
+          await apiRequest('/api/chat', 'POST', {
+            message: m.content,
+            conversation_id: convId
+          });
+        }
+        showToast('Conversation imported', 'upload_done');
+        $('exportModal').classList.add('hidden');
+        loadConversations();
+        selectConversation(convId);
+      } catch (e) {
+        showToast('Import failed — invalid file format', 'error');
+      }
+    }
+
+    // ── PROMPT LIBRARY ──
+    function getPrompts() {
+      try { return JSON.parse(localStorage.getItem('aura_prompt_library') || '[]'); }
+      catch { return []; }
+    }
+    function setPrompts(prompts) {
+      localStorage.setItem('aura_prompt_library', JSON.stringify(prompts));
+    }
+
+    function openPromptLibModal() {
+      $('promptLibModal').classList.remove('hidden');
+      renderPromptLibrary();
+    }
+
+    function renderPromptLibrary() {
+      const prompts = getPrompts();
+      const list = $('promptLibList');
+      if (!prompts.length) {
+        list.innerHTML = '<div class="promptlib-empty">No saved prompts yet. Type a prompt below and click Save.</div>';
+        return;
+      }
+      list.innerHTML = prompts.map((p, i) => `
+        <div class="promptlib-item">
+          <span class="pi-text">${escapeHtml(p)}</span>
+          <div class="pi-actions">
+            <button class="pi-btn" data-pi-use="${i}" title="Use prompt"><span class="material-symbols-outlined">play_arrow</span></button>
+            <button class="pi-btn del" data-pi-del="${i}" title="Delete prompt"><span class="material-symbols-outlined">delete</span></button>
+          </div>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('[data-pi-use]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-pi-use'), 10);
+          chatInput.value = prompts[idx];
+          chatInput.focus();
+          autoResizeInput();
+          $('promptLibModal').classList.add('hidden');
+          switchTab('chat');
+        });
+      });
+
+      list.querySelectorAll('[data-pi-del]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-pi-del'), 10);
+          prompts.splice(idx, 1);
+          setPrompts(prompts);
+          renderPromptLibrary();
+          showToast('Prompt deleted', 'delete');
+        });
+      });
+    }
+
+    function savePromptToLibrary() {
+      const input = $('promptLibInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const prompts = getPrompts();
+      if (prompts.includes(text)) {
+        showToast('Prompt already saved', 'info');
+        return;
+      }
+      prompts.push(text);
+      setPrompts(prompts);
+      input.value = '';
+      renderPromptLibrary();
+      showToast('Prompt saved', 'bookmark_added');
+    }
+
+    // ── SMART DRAFT RECOVERY ──
+    function saveDraft() {
+      const text = chatInput.value;
+      if (text.trim()) {
+        localStorage.setItem('aura_chat_draft', text);
+      } else {
+        localStorage.removeItem('aura_chat_draft');
+      }
+    }
+    function loadDraft() {
+      const draft = localStorage.getItem('aura_chat_draft');
+      if (draft) {
+        chatInput.value = draft;
+        autoResizeInput();
+      }
+    }
+    function clearDraft() {
+      localStorage.removeItem('aura_chat_draft');
     }
 
     initVoice();
